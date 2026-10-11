@@ -27,6 +27,7 @@ ENTS = [
     ("grzalka_3_kw", "binary_sensor", "Grzałka 3 kW", "aux_3kw", {}),
     ("grzalka_6_kw", "binary_sensor", "Grzałka 6 kW", "aux_6kw", {}),
     ("alarm_czujnik_pokojowy", "binary_sensor", "Alarm: czujnik pokojowy", "alarm_indoor_sensor", {}),
+    ("temp_stop_grzania_heatstop", "number", "Temp. stop grzania (Heatstop)", "setting_heating_stop_temp", {"step": 1}),
     ("cwu_prog_startu", "number", "CWU: próg startu", "setting_hotwater_start_temp", {"step": 1}),
     ("temp_zadana_awaryjna_bez_czujnika", "number", "Temp. zadana (awaryjna, bez czujnika)", "setting_indoor_temp", {"step": 1}),
     ("waga_wplywu_temp_pokojowej_room_factor", "number", "Waga wpływu temp. pokojowej (room_factor)", "setting_room_factor", {"step": 1}),
@@ -34,7 +35,7 @@ ENTS = [
     ("pok_temp_zadana", "number", "Pok. temp. zadana", "setpoint", {"step": 0.5}),
 ]
 EXPECTED = {
-    "outdoor": "temp_zewnetrzna", "brine_in": "dz_temp_wejscia", "brine_out": "dz_temp_wyjscia",
+    "outdoor": "temp_zewnetrzna", "heatstop": "temp_stop_grzania_heatstop", "brine_in": "dz_temp_wejscia", "brine_out": "dz_temp_wyjscia",
     "brine_pump": "pompa_dz", "brine_pump_speed": "pompa_dz_moc", "compressor": "praca_sprezarki",
     "hot_gas": "goracy_gaz_tloczenie", "current": "prad", "aux_3kw": "grzalka_3_kw", "aux_6kw": "grzalka_6_kw",
     "integral": "integral_ro", "supply": "zasilanie_co_t1", "return": "powrot_co_t2",
@@ -97,6 +98,7 @@ with sync_playwright() as p:
             "compressor": "Compressor", "brine_pump": "Brine pump", "supply_pump": "Circulation pump",
             "hotwater_production": "Hot water production", "aux_3kw": "Aux heater 3 kW", "aux_6kw": "Aux heater 6 kW",
             "alarm_indoor_sensor": "Alarm: room sensor", "setting_hotwater_start_temp": "Hot water start",
+            "setting_heating_stop_temp": "Heating stop temperature",
             "setting_indoor_temp": "Fallback setpoint", "setting_room_factor": "Room factor",
             "room_temperature": "Room temperature (emulated)", "setpoint": "Room setpoint"}))),
     }

@@ -5,7 +5,7 @@
 import sys
 
 V = dict(  # example values (winter day)
-    outdoor=-3.0, brine_in=2.1, brine_out=-1.4, brine_pwm=65,
+    outdoor=-3.0, heatstop=17, brine_in=2.1, brine_out=-1.4, brine_pwm=65,
     t1=38.2, t2=33.5, target=39.0, t3=48.0, hot_gas=72.0, integral=-120,
     current=6.2, supply_pwm=40, compressor=True, aux3=False, aux6=False,
     valve="CO", room=21.3, sp_sensor=21.5, sp_active=21.5, sp_fallback=20.0, room_factor=3,
@@ -90,6 +90,9 @@ A('<text x="84" y="34" class="lbl">Zewnętrzna</text>')
 A(f'<text id="val-outdoor" x="84" y="56" font-size="20" font-weight="bold" fill="{tcol(V["outdoor"])}">'
   f'{V["outdoor"]:.0f} °C</text>')
 A('</g>')
+# heat stop: above this outdoor temperature the pump does not heat (outside the group: its own click area)
+A(f'<text id="val-heatstop" x="84" y="76" class="lbl" font-size="11">'
+  f'<tspan data-i18n="heatstop">stop CO</tspan> ≥ <tspan id="val-heatstop-temp">{V["heatstop"]:.0f} °C</tspan></text>')
 A('<path class="sig" d="M160,48 H390 V110"/>')
 
 # ---------- ground source ----------

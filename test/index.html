@@ -29,7 +29,7 @@
 <script>
   const E = (s, attrs = {}) => ({ state: String(s), attributes: attrs });
   const entities = {
-    outdoor: "sensor.outdoor", brine_in: "sensor.brine_in", brine_out: "sensor.brine_out",
+    outdoor: "sensor.outdoor", heatstop: "number.heatstop", brine_in: "sensor.brine_in", brine_out: "sensor.brine_out",
     brine_pump: "binary_sensor.brine_pump", brine_pump_speed: "sensor.brine_pump_speed",
     compressor: "binary_sensor.compressor", hot_gas: "sensor.hot_gas", current: "sensor.current",
     aux_3kw: "binary_sensor.aux_3kw", aux_6kw: "binary_sensor.aux_6kw", integral: "sensor.integral",
@@ -42,7 +42,7 @@
   };
   function states(v) {
     return {
-      "sensor.outdoor": E(v.outdoor), "sensor.brine_in": E(v.bi), "sensor.brine_out": E(v.bo),
+      "sensor.outdoor": E(v.outdoor), "number.heatstop": E(17), "sensor.brine_in": E(v.bi), "sensor.brine_out": E(v.bo),
       "binary_sensor.brine_pump": E(v.bp ? "on" : "off"), "sensor.brine_pump_speed": E(v.bps),
       "binary_sensor.compressor": E(v.comp ? "on" : "off"), "sensor.hot_gas": E(v.hg), "sensor.current": E(v.cur),
       "binary_sensor.aux_3kw": E(v.a3 ? "on" : "off"), "binary_sensor.aux_6kw": E("off"),

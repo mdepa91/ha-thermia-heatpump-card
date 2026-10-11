@@ -73,6 +73,7 @@ title: Heat pump            # optional
 language: pl               # optional: pl | en, default = Home Assistant language
 entities:
   outdoor: sensor.thermia_temp_outdoor
+  heatstop: number.thermia_setting_heating_stop_temp
   brine_in: sensor.thermia_brine_in
   brine_out: sensor.thermia_brine_out
   brine_pump: binary_sensor.thermia_brine_pump
@@ -119,6 +120,7 @@ views:
 | Key | esphome-thermia / esphome-thermia-room | Shown as |
 |---|---|---|
 | `outdoor` | `temp_outdoor` | Outdoor temperature |
+| `heatstop` | `setting_heating_stop_temp` | "heat stop ≥ 17 °C" under the outdoor temperature, orange while the outdoor temperature is at or above it |
 | `brine_in`, `brine_out` | `temp_brine_in`, `temp_brine_out` | Ground loop pipes |
 | `brine_pump`, `brine_pump_speed` | `brine_pump`, `brine_pump_speed` | Brine pump (on/off, %) |
 | `compressor` | `compressor` | Compressor (spins when on) |

@@ -28,6 +28,7 @@
 <text x="84" y="34" class="lbl" data-i18n="outdoor">Zewnętrzna</text>
 <text id="val-outdoor" x="84" y="56" font-size="20" font-weight="bold" style="fill:#1f74e6">-3 °C</text>
 </g>
+<text id="val-heatstop" x="84" y="76" class="lbl" font-size="11"><tspan data-i18n="heatstop">stop CO</tspan> ≥ <tspan id="val-heatstop-temp">17 °C</tspan></text>
 <path class="sig" d="M160,48 H390 V110"/>
 <rect x="10" y="420" width="230" height="170" rx="6" fill="url(#soil)"/>
 <rect x="10" y="414" width="230" height="8" fill="#34a853"/>

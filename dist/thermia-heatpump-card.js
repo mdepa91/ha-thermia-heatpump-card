@@ -4,7 +4,7 @@
  * temperature. Source: src/card.js + src/heatpump.svg, built into dist/ by build.py.
  */
 
-const CARD_VERSION = "0.2.1";
+const CARD_VERSION = "0.2.2";
 const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" viewBox="0 0 1030 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
 <defs>
   <style>
@@ -35,6 +35,7 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" v
 <text x="84" y="34" class="lbl" data-i18n="outdoor">Zewnętrzna</text>
 <text id="val-outdoor" x="84" y="56" font-size="20" font-weight="bold" style="fill:#1f74e6">-3 °C</text>
 </g>
+<text id="val-heatstop" x="84" y="76" class="lbl" font-size="11"><tspan data-i18n="heatstop">stop CO</tspan> ≥ <tspan id="val-heatstop-temp">17 °C</tspan></text>
 <path class="sig" d="M160,48 H390 V110"/>
 <rect x="10" y="420" width="230" height="170" rx="6" fill="url(#soil)"/>
 <rect x="10" y="414" width="230" height="8" fill="#34a853"/>
@@ -204,7 +205,7 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" v
 
 const I18N = {
   pl: {
-    outdoor: "Zewnętrzna", ground: "Dolne źródło", brine_pump: "Pompa DŹ", brine_in: "DŹ wejście",
+    outdoor: "Zewnętrzna", heatstop: "stop CO", ground: "Dolne źródło", brine_pump: "Pompa DŹ", brine_in: "DŹ wejście",
     brine_out: "DŹ wyjście", heat_pump: "Pompa ciepła", evaporator: "parownik", condenser: "skraplacz",
     expansion_valve: "zawór rozprężny", hot_gas: "Gorący gaz", current: "Prąd", integral: "Integral",
     supply_target: "Zasilanie zadana", aux_heaters: "grzałki", supply_pump: "Pompa CO", valve: "zawór 3D",
@@ -214,7 +215,7 @@ const I18N = {
     sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika",
   },
   en: {
-    outdoor: "Outdoor", ground: "Ground loop", brine_pump: "Brine pump", brine_in: "Brine in",
+    outdoor: "Outdoor", heatstop: "heat stop", ground: "Ground loop", brine_pump: "Brine pump", brine_in: "Brine in",
     brine_out: "Brine out", heat_pump: "Heat pump", evaporator: "evaporator", condenser: "condenser",
     expansion_valve: "expansion valve", hot_gas: "Hot gas", current: "Current", integral: "Integral",
     supply_target: "Supply target", aux_heaters: "aux heaters", supply_pump: "Heating pump", valve: "3-way valve",
@@ -227,7 +228,7 @@ const I18N = {
 
 // Entity keys accepted under `entities:` (names follow esphome-thermia / esphome-thermia-room).
 const ENTITY_KEYS = [
-  "outdoor", "brine_in", "brine_out", "brine_pump", "brine_pump_speed", "compressor", "hot_gas", "current",
+  "outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed", "compressor", "hot_gas", "current",
   "aux_3kw", "aux_6kw", "integral", "supply", "return", "supply_target", "supply_pump", "supply_pump_speed",
   "hotwater_production", "hotwater", "room_temperature", "setpoint", "indoor_target", "fallback_setpoint",
   "room_factor", "alarm_indoor_sensor",
@@ -235,7 +236,7 @@ const ENTITY_KEYS = [
 
 // Visual editor (gives the card the Config / Visibility / Layout tabs in HA). Groups follow the drawing.
 const EDITOR_GROUPS = [
-  ["ground", ["outdoor", "brine_in", "brine_out", "brine_pump", "brine_pump_speed"]],
+  ["ground", ["outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed"]],
   ["heat_pump", ["compressor", "hot_gas", "current", "aux_3kw", "aux_6kw", "integral", "supply_target"]],
   ["heating_side", ["supply", "return", "supply_pump", "supply_pump_speed", "hotwater_production", "hotwater"]],
   ["room", ["room_temperature", "setpoint", "indoor_target", "fallback_setpoint", "room_factor", "alarm_indoor_sensor"]],
@@ -246,6 +247,7 @@ const EDITOR_LABELS = {
   pl: {
     title: "Tytuł", language: "Język", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
     heating_side: "CO / CWU", room: "Czujnik pokojowy", outdoor: "Temperatura zewnętrzna",
+    heatstop: "Stop grzania CO (Heatstop)",
     brine_in: "DŹ wejście", brine_out: "DŹ wyjście", brine_pump: "Pompa DŹ (włączona)",
     brine_pump_speed: "Pompa DŹ (moc %)", compressor: "Sprężarka (włączona)", hot_gas: "Gorący gaz",
     current: "Prąd", aux_3kw: "Grzałka 3 kW", aux_6kw: "Grzałka 6 kW", integral: "Integral",
@@ -259,6 +261,7 @@ const EDITOR_LABELS = {
   en: {
     title: "Title", language: "Language", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
     heating_side: "Heating / hot water", room: "Room sensor", outdoor: "Outdoor temperature",
+    heatstop: "Heating stop (heatstop)",
     brine_in: "Brine in", brine_out: "Brine out", brine_pump: "Brine pump (on/off)",
     brine_pump_speed: "Brine pump (speed %)", compressor: "Compressor (on/off)", hot_gas: "Hot gas",
     current: "Current", aux_3kw: "Aux heater 3 kW", aux_6kw: "Aux heater 6 kW", integral: "Integral",
@@ -283,7 +286,7 @@ function langOf(hass) {
 const MAP_MARKER = "thermia-card-map:1";
 // firmware config key -> [card key, priority] (higher wins when two firmware keys map to the same card key)
 const FW_TO_CARD = {
-  temp_outdoor: ["outdoor", 1], temp_brine_in: ["brine_in", 1], temp_brine_out: ["brine_out", 1],
+  temp_outdoor: ["outdoor", 1], setting_heating_stop_temp: ["heatstop", 1], temp_brine_in: ["brine_in", 1], temp_brine_out: ["brine_out", 1],
   brine_pump: ["brine_pump", 1], brine_pump_speed: ["brine_pump_speed", 1], compressor: ["compressor", 1],
   temp_hot_gas: ["hot_gas", 1], current: ["current", 1], aux_3kw: ["aux_3kw", 1], aux_6kw: ["aux_6kw", 1],
   integral: ["integral", 1], temp_supply: ["supply", 1], temp_return: ["return", 1],
@@ -306,7 +309,8 @@ const KEYWORDS = [
   ["supply_target", SENSORS, /(zasil|supply).*(zadan|target)|(zadan|target).*(zasil|supply)/],
   ["supply", SENSORS, /zasil|supply|\bt1\b/, /zadan|target|shunt|bocznik/],
   ["return", SENSORS, /powrot|return|\bt2\b/, /zadan|target/],
-  ["outdoor", SENSORS, /zewn|outdoor|outside/],
+  ["heatstop", SENSORS, /heat ?stop|stop grzan|heating stop/],
+  ["outdoor", SENSORS, /zewn|outdoor|outside/, /stop/],
   ["brine_in", SENSORS, /(dz|brine|ground).*(wej|\bin\b|inlet)|(wej|inlet).*(dz|brine)/],
   ["brine_out", SENSORS, /(dz|brine|ground).*(wyj|\bout\b|outlet)|(wyj|outlet).*(dz|brine)/],
   ["brine_pump_speed", SENSORS, PUMP_DZ, null, (n) => SPEED.test(n)],
@@ -453,6 +457,7 @@ async function loadHaForm() {
 // clickable, not only the glyphs. Entries are element ids, or "i18n:<key>" for a translated label.
 const CLICK_GROUPS = {
   outdoor: ["outdoor"],
+  heatstop: ["val-heatstop"],
   brine_in: ["i18n:brine_in", "val-brine-in"],
   brine_out: ["i18n:brine_out", "val-brine-out"],
   brine_pump: ["i18n:brine_pump", "val-brine-pwm", "brine-pump"],
@@ -726,7 +731,17 @@ class ThermiaHeatpumpCard extends HTMLElement {
     if (!this._hitsDone) requestAnimationFrame(() => this._addHitAreas());
 
     // outdoor
-    this._temp("outdoor", "val-outdoor");
+    const outdoor = this._temp("outdoor", "val-outdoor");
+    // heat stop: highlighted while the outdoor temperature is at or above it (the pump does not heat then)
+    const heatstop = this._num("heatstop");
+    const hsEl = this._el("val-heatstop");
+    if (hsEl) hsEl.style.display = this._ents.heatstop ? "" : "none";
+    const stopped = Number.isFinite(outdoor) && Number.isFinite(heatstop) && outdoor >= heatstop;
+    this._text("val-heatstop-temp", this._fmt(heatstop, 0, " °C"));
+    if (hsEl) {
+      hsEl.style.fill = stopped ? "#e37400" : "";
+      hsEl.style.fontWeight = stopped ? "bold" : "";
+    }
 
     // ground loop
     const brineOn = this._pumpOn("brine_pump", "brine_pump_speed");
