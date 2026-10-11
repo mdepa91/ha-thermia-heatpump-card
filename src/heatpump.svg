@@ -77,7 +77,7 @@
 <text x="334" y="422" class="lbl" data-i18n="integral">Integral</text>
 <text id="val-integral" x="606" y="422" text-anchor="end" class="val">-120 °C·min</text>
 <text x="334" y="448" class="lbl" data-i18n="supply_target">Zasilanie zadana</text>
-<text id="val-target" x="606" y="448" text-anchor="end" class="val" style="fill:#f0990e">39.0 °C</text>
+<text x="606" y="448" text-anchor="end"><tspan id="val-target" class="val" fill="#f0990e">39.0 °C</tspan><tspan id="val-target-now" class="lbl"> (T1 38.2 °C)</tspan></text>
 <path id="pipe-supply" class="pipe" stroke="#ef9f0c" d="M615,200 H750"/>
 <path id="pipe-co-supply" class="pipe" stroke="#ef9f0c" d="M776,200 H835 V125 H872"/>
 <path id="pipe-cwu-supply" class="pipe" stroke="#c4c7cc" d="M763,213 V275"/>

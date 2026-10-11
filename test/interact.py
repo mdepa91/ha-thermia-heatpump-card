@@ -31,6 +31,18 @@ with sync_playwright() as p:
         x, y = center(page, card, loc)
         page.mouse.click(x, y)
         clicks[name] = page.evaluate("window.moreInfo")
+    # heater icon opens the stage that is running
+    aux = {}
+    for a3, a6 in (("off", "off"), ("on", "off"), ("off", "on"), ("on", "on")):
+        page.locator(card).evaluate(f"""c => {{
+          const states = Object.assign({{}}, c._hass.states, {{'binary_sensor.aux_3kw': {{state: '{a3}', attributes: {{}}}},
+                                                           'binary_sensor.aux_6kw': {{state: '{a6}', attributes: {{}}}}}});
+          c.hass = Object.assign({{}}, c._hass, {{states}});
+        }}""")
+        page.evaluate("window.moreInfo = []")
+        x, y = center(page, card, "c.shadowRoot.getElementById('heater')")
+        page.mouse.click(x, y)
+        aux[f"3kW {a3}, 6kW {a6}"] = page.evaluate("window.moreInfo")
     # -/+ buttons with the mouse
     page.evaluate("window.calls = []")
     x, y = center(page, card, "c.shadowRoot.getElementById('btn-sp-down')")
@@ -64,6 +76,6 @@ with sync_playwright() as p:
     paused = busy()
     page.evaluate("document.querySelectorAll('.wrap').forEach(w => w.remove())")
     empty = busy()
-    print(json.dumps({"hit_areas": n_hits, "clicks": clicks, "minus_button": minus, "update": skip,
+    print(json.dumps({"hit_areas": n_hits, "clicks": clicks, "heater_click": aux, "minus_button": minus, "update": skip,
                       "cpu_main_thread_percent": {"animations_running": running, "paused": paused, "no_cards": empty},
                       "errors": errors}, ensure_ascii=False, indent=1))

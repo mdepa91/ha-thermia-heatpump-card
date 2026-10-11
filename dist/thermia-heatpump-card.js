@@ -4,7 +4,7 @@
  * temperature. Source: src/card.js + src/heatpump.svg, built into dist/ by build.py.
  */
 
-const CARD_VERSION = "0.2.0";
+const CARD_VERSION = "0.2.1";
 const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" viewBox="0 0 1030 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
 <defs>
   <style>
@@ -84,7 +84,7 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" v
 <text x="334" y="422" class="lbl" data-i18n="integral">Integral</text>
 <text id="val-integral" x="606" y="422" text-anchor="end" class="val">-120 °C·min</text>
 <text x="334" y="448" class="lbl" data-i18n="supply_target">Zasilanie zadana</text>
-<text id="val-target" x="606" y="448" text-anchor="end" class="val" style="fill:#f0990e">39.0 °C</text>
+<text x="606" y="448" text-anchor="end"><tspan id="val-target" class="val" fill="#f0990e">39.0 °C</tspan><tspan id="val-target-now" class="lbl"> (T1 38.2 °C)</tspan></text>
 <path id="pipe-supply" class="pipe" stroke="#ef9f0c" d="M615,200 H750"/>
 <path id="pipe-co-supply" class="pipe" stroke="#ef9f0c" d="M776,200 H835 V125 H872"/>
 <path id="pipe-cwu-supply" class="pipe" stroke="#c4c7cc" d="M763,213 V275"/>
@@ -460,7 +460,7 @@ const CLICK_GROUPS = {
   hot_gas: ["i18n:hot_gas", "val-hot-gas"],
   current: ["i18n:current", "val-current"],
   integral: ["i18n:integral", "val-integral"],
-  supply_target: ["i18n:supply_target", "val-target"],
+  supply_target: ["i18n:supply_target", "val-target", "val-target-now"],
   aux_3kw: ["heater", "val-aux"],
   supply: ["lbl-t1", "val-t1"],
   return: ["lbl-t2", "val-t2"],
@@ -646,7 +646,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
       rect.setAttribute("height", y2 - y1 + 2 * pad);
       rect.setAttribute("rx", 6);
       rect.dataset.entity = entityKey;
-      rect.addEventListener("click", () => this._moreInfo(entityKey));
+      rect.addEventListener("click", () => this._moreInfo(key === "aux_3kw" ? this._auxKey(entityKey) : entityKey));
       layer.appendChild(rect);
     }
     // On top of everything; the -/+ buttons sit outside every hit area, so they stay clickable.
@@ -766,6 +766,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._text("val-integral", this._fmt(integral, 0, " °C·min"),
       Number.isFinite(integral) && integral < 0 ? "#c5221f" : undefined);
     this._temp("supply_target", "val-target");
+    this._text("val-target-now", Number.isFinite(t1) ? ` (T1 ${this._fmt(t1, 1, " °C")})` : "");
 
     // heating / DHW side
     const dhw = this._on("hotwater_production") === true;
@@ -828,6 +829,12 @@ class ThermiaHeatpumpCard extends HTMLElement {
       this._hass.callService("number", "set_value", { entity_id: st.entity_id, value });
       this._pendingSetpoint = undefined;
     }, 600);
+  }
+
+  // The heater icon stands for both stages: open the one that is running (3 kW when both or neither run).
+  _auxKey(fallback) {
+    if (this._ents.aux_6kw && this._on("aux_6kw") && !this._on("aux_3kw")) return "aux_6kw";
+    return fallback;
   }
 
   _moreInfo(key) {

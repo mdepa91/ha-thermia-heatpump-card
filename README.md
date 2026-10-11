@@ -125,7 +125,7 @@ views:
 | `hot_gas`, `current` | `temp_hot_gas`, `current` | Values next to the compressor |
 | `aux_3kw`, `aux_6kw` | `aux_3kw`, `aux_6kw` | Heater in the supply line, total kW above it |
 | `integral` | `integral` | Integral (red when negative) |
-| `supply`, `return`, `supply_target` | `temp_supply`, `temp_return`, `temp_supply_target` | T1, T2, supply target |
+| `supply`, `return`, `supply_target` | `temp_supply`, `temp_return`, `temp_supply_target` | T1, T2, supply target (with the current T1 in brackets) |
 | `supply_pump`, `supply_pump_speed` | `supply_pump`, `supply_pump_speed` | Heating pump (on/off, %) |
 | `hotwater_production` | `hotwater_production` | 3-way valve: on = hot water, off = heating |
 | `hotwater` | `temp_hotwater` | T3 in the tank |

@@ -164,8 +164,9 @@ A('<rect x="318" y="394" width="304" height="70" rx="8" fill="#f8f9fa" stroke="#
 A('<text x="334" y="422" class="lbl">Integral</text>')
 A(f'<text id="val-integral" x="606" y="422" text-anchor="end" class="val">{V["integral"]} °C·min</text>')
 A('<text x="334" y="448" class="lbl">Zasilanie zadana</text>')
-A(f'<text id="val-target" x="606" y="448" text-anchor="end" class="val" fill="{tcol(V["target"])}">'
-  f'{V["target"]:.1f} °C</text>')
+# the target, then the current supply temperature T1 it is compared with
+A(f'<text x="606" y="448" text-anchor="end"><tspan id="val-target" class="val" fill="{tcol(V["target"])}">'
+  f'{V["target"]:.1f} °C</tspan><tspan id="val-target-now" class="lbl"> (T1 {V["t1"]:.1f} °C)</tspan></text>')
 
 # ---------- heating side ----------
 co = V["valve"] == "CO"

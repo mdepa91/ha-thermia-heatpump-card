@@ -265,7 +265,7 @@ const CLICK_GROUPS = {
   hot_gas: ["i18n:hot_gas", "val-hot-gas"],
   current: ["i18n:current", "val-current"],
   integral: ["i18n:integral", "val-integral"],
-  supply_target: ["i18n:supply_target", "val-target"],
+  supply_target: ["i18n:supply_target", "val-target", "val-target-now"],
   aux_3kw: ["heater", "val-aux"],
   supply: ["lbl-t1", "val-t1"],
   return: ["lbl-t2", "val-t2"],
@@ -451,7 +451,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
       rect.setAttribute("height", y2 - y1 + 2 * pad);
       rect.setAttribute("rx", 6);
       rect.dataset.entity = entityKey;
-      rect.addEventListener("click", () => this._moreInfo(entityKey));
+      rect.addEventListener("click", () => this._moreInfo(key === "aux_3kw" ? this._auxKey(entityKey) : entityKey));
       layer.appendChild(rect);
     }
     // On top of everything; the -/+ buttons sit outside every hit area, so they stay clickable.
@@ -571,6 +571,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._text("val-integral", this._fmt(integral, 0, " °C·min"),
       Number.isFinite(integral) && integral < 0 ? "#c5221f" : undefined);
     this._temp("supply_target", "val-target");
+    this._text("val-target-now", Number.isFinite(t1) ? ` (T1 ${this._fmt(t1, 1, " °C")})` : "");
 
     // heating / DHW side
     const dhw = this._on("hotwater_production") === true;
@@ -633,6 +634,12 @@ class ThermiaHeatpumpCard extends HTMLElement {
       this._hass.callService("number", "set_value", { entity_id: st.entity_id, value });
       this._pendingSetpoint = undefined;
     }, 600);
+  }
+
+  // The heater icon stands for both stages: open the one that is running (3 kW when both or neither run).
+  _auxKey(fallback) {
+    if (this._ents.aux_6kw && this._on("aux_6kw") && !this._on("aux_3kw")) return "aux_6kw";
+    return fallback;
   }
 
   _moreInfo(key) {
