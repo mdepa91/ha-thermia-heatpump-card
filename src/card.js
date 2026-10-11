@@ -6,6 +6,10 @@
 
 const CARD_VERSION = "__VERSION__";
 const SVG = `__SVG__`;
+const SVG_PORTRAIT = `__SVG_PORTRAIT__`;
+// Below this card width (px) the portrait drawing is used (layout: auto).
+const PORTRAIT_BELOW = 700;
+const LAYOUTS = ["auto", "landscape", "portrait"];
 
 const I18N = {
   pl: {
@@ -51,7 +55,7 @@ const BINARY_KEYS = ["brine_pump", "compressor", "aux_3kw", "aux_6kw", "supply_p
   "alarm_indoor_sensor"];
 const EDITOR_LABELS = {
   pl: {
-    title: "Tytuł", language: "Język", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
+    title: "Tytuł", language: "Język", layout: "Układ rysunku", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
     heating_side: "CO / CWU", room: "Czujnik pokojowy", outdoor: "Temperatura zewnętrzna",
     heatstop: "Stop grzania CO (Heatstop)",
     brine_in: "DŹ wejście", brine_out: "DŹ wyjście", brine_pump: "Pompa DŹ (włączona)",
@@ -65,7 +69,7 @@ const EDITOR_LABELS = {
     alarm_indoor_sensor: "Alarm czujnika pokojowego",
   },
   en: {
-    title: "Title", language: "Language", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
+    title: "Title", language: "Language", layout: "Drawing layout", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
     heating_side: "Heating / hot water", room: "Room sensor", outdoor: "Outdoor temperature",
     heatstop: "Heating stop (heatstop)",
     brine_in: "Brine in", brine_out: "Brine out", brine_pump: "Brine pump (on/off)",
@@ -232,6 +236,19 @@ function editorSchema(lang, deviceEntities) {
             select: { mode: "dropdown", options: [{ value: "pl", label: "Polski" }, { value: "en", label: "English" }] },
           },
         },
+        {
+          name: "layout",
+          selector: {
+            select: {
+              mode: "dropdown",
+              options: lang === "pl"
+                ? [{ value: "auto", label: "Automatyczny" }, { value: "landscape", label: "Poziomy" },
+                  { value: "portrait", label: "Pionowy (telefon)" }]
+                : [{ value: "auto", label: "Auto" }, { value: "landscape", label: "Landscape" },
+                  { value: "portrait", label: "Portrait (phone)" }],
+            },
+          },
+        },
       ],
     },
     { name: "device", selector: { device: { filter: { integration: "esphome" } } } },
@@ -313,9 +330,11 @@ function tcol(t) {
 }
 
 const STYLE = `
+  :host { display: block; }
   ha-card { padding: 8px; overflow: hidden; }
   .card-title { padding: 4px 8px 8px; font-size: 1.2em; }
   svg { width: 100%; height: auto; display: block; }
+  svg.portrait { max-width: 520px; margin: 0 auto; }
   svg .bg { fill: transparent; }
   svg .box { fill: var(--card-background-color, #fff); }
   svg .panel { fill: var(--secondary-background-color, #f8f9fa); }
@@ -352,6 +371,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
     const unknown = Object.keys(config.entities).filter((k) => !ENTITY_KEYS.includes(k));
     if (unknown.length) throw new Error(`Unknown entity keys: ${unknown.join(", ")}`);
     if (config.language && !I18N[config.language]) throw new Error("language: must be pl or en");
+    if (config.layout && !LAYOUTS.includes(config.layout)) throw new Error("layout: must be auto, landscape or portrait");
     if (config.device !== undefined && typeof config.device !== "string") throw new Error("device: must be a device id");
     this._config = config;
     this._ents = config.entities;
@@ -395,8 +415,11 @@ class ThermiaHeatpumpCard extends HTMLElement {
   _build() {
     if (!this._root) this._root = this.attachShadow({ mode: "open" });
     const title = this._config.title ? `<div class="card-title">${this._config.title}</div>` : "";
-    this._root.innerHTML = `<style>${STYLE}</style><ha-card>${title}${SVG}</ha-card>`;
+    this._layout = this._layoutFor(this._width);
+    const svg = this._layout === "portrait" ? SVG_PORTRAIT : SVG;
+    this._root.innerHTML = `<style>${STYLE}</style><ha-card>${title}${svg}</ha-card>`;
     this._svg = this._root.querySelector("svg");
+    this._svg.classList.toggle("portrait", this._layout === "portrait");
     this._svg.removeAttribute("width");
     this._svg.removeAttribute("height");
     for (const el of this._svg.querySelectorAll("[data-i18n]")) el.textContent = this._t(el.dataset.i18n);
@@ -406,7 +429,25 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._el("btn-sp-up").addEventListener("click", () => this._stepSetpoint(1));
   }
 
+  // `layout: auto` (default): the portrait drawing on narrow cards (phones), the landscape one otherwise.
+  _layoutFor(width) {
+    const layout = this._config.layout || "auto";
+    if (layout !== "auto") return layout;
+    return width > 0 && width < PORTRAIT_BELOW ? "portrait" : "landscape";
+  }
+
   connectedCallback() {
+    // Switch the drawing when the card's width crosses PORTRAIT_BELOW (rotating the phone, resizing the window).
+    if (!this._resizer && "ResizeObserver" in window) {
+      this._resizer = new ResizeObserver((entries) => {
+        this._width = entries[entries.length - 1].contentRect.width;
+        if (this._root && this._layoutFor(this._width) !== this._layout) {
+          this._build();
+          this._update();
+        }
+      });
+      this._resizer.observe(this);
+    }
     // Pause the spinning icons while the card is off screen (another view, collapsed, scrolled away).
     if (!this._observer && "IntersectionObserver" in window) {
       this._observer = new IntersectionObserver((entries) => {
@@ -421,6 +462,8 @@ class ThermiaHeatpumpCard extends HTMLElement {
   disconnectedCallback() {
     if (this._observer) this._observer.disconnect();
     this._observer = undefined;
+    if (this._resizer) this._resizer.disconnect();
+    this._resizer = undefined;
   }
 
   // Needs real layout (getBoundingClientRect), so it runs once the card is visible and sized.
@@ -708,6 +751,7 @@ class ThermiaHeatpumpCardEditor extends HTMLElement {
       cfg.entities = { ...detectEntities(this._hass, cfg.device), ...kept };
     }
     for (const k of ["device", "title", "language"]) if (!cfg[k]) delete cfg[k];
+    if (!cfg.layout || cfg.layout === "auto") delete cfg.layout;
     this._config = cfg;
     this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: cfg }, bubbles: true, composed: true }));
     this._render();

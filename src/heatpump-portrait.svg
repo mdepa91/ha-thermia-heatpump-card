@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="420" height="1075" viewBox="0 0 420 1075" font-family="Helvetica, Arial, sans-serif" font-size="13">
+<defs>
+  <style>
+    .pipe{fill:none;stroke-width:9;stroke-linecap:round;stroke-linejoin:round}
+    .ref{fill:none;stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+    .lbl{fill:#5f6368;font-size:12px}
+    .val{fill:#202124;font-size:14px;font-weight:bold}
+    .title{fill:#202124;font-size:14px;font-weight:bold}
+    .tag{font-size:11px;font-weight:bold}
+    .sig{fill:none;stroke:#9aa0a6;stroke-width:1.5;stroke-dasharray:5 4}
+    .spin{transform-box:fill-box;transform-origin:center;animation:th-spin 2s steps(60) infinite}
+    .impeller.spin{animation:th-spin 1.6s steps(48) infinite}
+    @keyframes th-spin{to{transform:rotate(360deg)}}
+  </style>
+  <pattern id="soil" width="16" height="16" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" fill="#a47551"/><circle cx="4" cy="5" r="1.4" fill="#8a5f3e"/>
+    <circle cx="12" cy="11" r="1.1" fill="#8a5f3e"/></pattern>
+  <linearGradient id="grad-floor" x1="0" y1="1" x2="0" y2="0">
+    <stop id="grad-floor-in" offset="0" stop-color="#ef9f0c"/>
+    <stop id="grad-floor-out" offset="1" stop-color="#d6b511"/>
+  </linearGradient>
+</defs>
+<rect class="bg" width="420" height="1075" fill="#f1f3f4"/>
+<rect class="box" x="20" y="460" width="380" height="360" rx="12" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>
+<g id="outdoor">
+<circle cx="40" cy="38" r="14" fill="#fbbc04"/>
+<path d="M30,62 a12,12 0 0 1 7,-21 a16,16 0 0 1 29,4 a10,10 0 0 1 2,20 h-34 a9,9 0 0 1 -4,-3 z" fill="#ffffff" stroke="#9aa0a6" stroke-width="1.5"/>
+<text x="84" y="34" class="lbl" data-i18n="outdoor">Zewnętrzna</text>
+<text id="val-outdoor" x="84" y="56" font-size="20" font-weight="bold" style="fill:#1f74e6">-3 °C</text>
+</g>
+<text id="val-heatstop" x="84" y="76" class="lbl" font-size="11"><tspan data-i18n="heatstop">stop CO</tspan> ≥ <tspan id="val-heatstop-temp">17 °C</tspan></text>
+<text x="212" y="26" class="lbl" font-size="11" data-i18n="legend">Kolor = temperatura</text>
+<rect x="212" y="34" width="3.2" height="9" fill="#2563eb"/>
+<rect x="215.2" y="34" width="3.2" height="9" fill="#226be9"/>
+<rect x="218.4" y="34" width="3.2" height="9" fill="#1f74e6"/>
+<rect x="221.6" y="34" width="3.2" height="9" fill="#1c7ce4"/>
+<rect x="224.8" y="34" width="3.2" height="9" fill="#1984e2"/>
+<rect x="228" y="34" width="3.2" height="9" fill="#168ce0"/>
+<rect x="231.2" y="34" width="3.2" height="9" fill="#1295dd"/>
+<rect x="234.4" y="34" width="3.2" height="9" fill="#0f9ddb"/>
+<rect x="237.6" y="34" width="3.2" height="9" fill="#0ca5d9"/>
+<rect x="240.8" y="34" width="3.2" height="9" fill="#09aed6"/>
+<rect x="244" y="34" width="3.2" height="9" fill="#06b6d4"/>
+<rect x="247.2" y="34" width="3.2" height="9" fill="#08b7cc"/>
+<rect x="250.4" y="34" width="3.2" height="9" fill="#0ab8c4"/>
+<rect x="253.6" y="34" width="3.2" height="9" fill="#0cb9bc"/>
+<rect x="256.8" y="34" width="3.2" height="9" fill="#0dbab5"/>
+<rect x="260" y="34" width="3.2" height="9" fill="#0fbbad"/>
+<rect x="263.2" y="34" width="3.2" height="9" fill="#11bca5"/>
+<rect x="266.4" y="34" width="3.2" height="9" fill="#13bd9d"/>
+<rect x="269.6" y="34" width="3.2" height="9" fill="#15be95"/>
+<rect x="272.8" y="34" width="3.2" height="9" fill="#17bf8d"/>
+<rect x="276" y="34" width="3.2" height="9" fill="#19c085"/>
+<rect x="279.2" y="34" width="3.2" height="9" fill="#1bc17d"/>
+<rect x="282.4" y="34" width="3.2" height="9" fill="#1cc276"/>
+<rect x="285.6" y="34" width="3.2" height="9" fill="#1ec36e"/>
+<rect x="288.8" y="34" width="3.2" height="9" fill="#20c466"/>
+<rect x="292" y="34" width="3.2" height="9" fill="#22c55e"/>
+<rect x="295.2" y="34" width="3.2" height="9" fill="#2fc458"/>
+<rect x="298.4" y="34" width="3.2" height="9" fill="#3dc353"/>
+<rect x="301.6" y="34" width="3.2" height="9" fill="#4ac14d"/>
+<rect x="304.8" y="34" width="3.2" height="9" fill="#57c047"/>
+<rect x="308" y="34" width="3.2" height="9" fill="#65bf41"/>
+<rect x="311.2" y="34" width="3.2" height="9" fill="#72be3c"/>
+<rect x="314.4" y="34" width="3.2" height="9" fill="#7fbd36"/>
+<rect x="317.6" y="34" width="3.2" height="9" fill="#8dbb30"/>
+<rect x="320.8" y="34" width="3.2" height="9" fill="#9aba2a"/>
+<rect x="324" y="34" width="3.2" height="9" fill="#a7b925"/>
+<rect x="327.2" y="34" width="3.2" height="9" fill="#b5b81f"/>
+<rect x="330.4" y="34" width="3.2" height="9" fill="#c2b719"/>
+<rect x="333.6" y="34" width="3.2" height="9" fill="#cfb513"/>
+<rect x="336.8" y="34" width="3.2" height="9" fill="#ddb40e"/>
+<rect x="340" y="34" width="3.2" height="9" fill="#eab308"/>
+<rect x="343.2" y="34" width="3.2" height="9" fill="#ecad09"/>
+<rect x="346.4" y="34" width="3.2" height="9" fill="#eda60b"/>
+<rect x="349.6" y="34" width="3.2" height="9" fill="#eea00c"/>
+<rect x="352.8" y="34" width="3.2" height="9" fill="#f0990e"/>
+<rect x="356" y="34" width="3.2" height="9" fill="#f2930f"/>
+<rect x="359.2" y="34" width="3.2" height="9" fill="#f38d10"/>
+<rect x="362.4" y="34" width="3.2" height="9" fill="#f48612"/>
+<rect x="365.6" y="34" width="3.2" height="9" fill="#f68013"/>
+<rect x="368.8" y="34" width="3.2" height="9" fill="#f87915"/>
+<rect x="372" y="34" width="3.2" height="9" fill="#f97316"/>
+<rect x="375.2" y="34" width="3.2" height="9" fill="#f66b18"/>
+<rect x="378.4" y="34" width="3.2" height="9" fill="#f36419"/>
+<rect x="381.6" y="34" width="3.2" height="9" fill="#f05c1b"/>
+<rect x="384.8" y="34" width="3.2" height="9" fill="#ed541c"/>
+<rect x="388" y="34" width="3.2" height="9" fill="#ea4c1e"/>
+<rect x="391.2" y="34" width="3.2" height="9" fill="#e84520"/>
+<rect x="394.4" y="34" width="3.2" height="9" fill="#e53d21"/>
+<rect x="397.6" y="34" width="3.2" height="9" fill="#e23523"/>
+<rect x="400.8" y="34" width="3.2" height="9" fill="#df2e24"/>
+<rect x="404" y="34" width="3.2" height="9" fill="#dc2626"/>
+<text x="212" y="56" text-anchor="middle" class="lbl" font-size="10">-5°</text>
+<text x="276" y="56" text-anchor="middle" class="lbl" font-size="10">15°</text>
+<text x="340" y="56" text-anchor="middle" class="lbl" font-size="10">35°</text>
+<text x="404" y="56" text-anchor="middle" class="lbl" font-size="10">55°</text>
+<path d="M212,74 h34" class="pipe" stroke="#c4c7cc"/><text x="254" y="78" class="lbl" font-size="11" data-i18n="inactive">nieaktywna gałąź</text>
+<g id="room" transform="translate(-1007,-155)">
+<rect class="box" x="1015" y="250" width="160" height="250" rx="16" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>
+<rect x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>
+<g id="ic-room" transform="translate(1048,283) scale(0.92)" fill="#8ab4f8" opacity="0.85"><title data-i18n="room_temp">Temperatura w pokoju</title><path d="M19 8C20.11 8 21 8.9 21 10V16.76C21.61 17.31 22 18.11 22 19C22 20.66 20.66 22 19 22C17.34 22 16 20.66 16 19C16 18.11 16.39 17.31 17 16.76V10C17 8.9 17.9 8 19 8M19 9C18.45 9 18 9.45 18 10V11H20V10C20 9.45 19.55 9 19 9M12 5.69L7 10.19V18H14.1L14 19L14.1 20H5V12H2L12 3L16.4 6.96C15.89 7.4 15.5 7.97 15.25 8.61L12 5.69Z"/></g>
+<text id="val-room" x="1106" y="304" text-anchor="middle" font-size="24" font-weight="bold" style="fill:#8ab4f8">21.3°</text>
+<g id="ic-setpoint" transform="translate(1086.65,366) scale(0.8625)" fill="#1a73e8"><title data-i18n="setpoint_hint">Temperatura zadana</title><path d="M16.95,16.95L14.83,14.83C15.55,14.1 16,13.1 16,12C16,11.26 15.79,10.57 15.43,10L17.6,7.81C18.5,9 19,10.43 19,12C19,13.93 18.22,15.68 16.95,16.95M12,5C13.57,5 15,5.5 16.19,6.4L14,8.56C13.43,8.21 12.74,8 12,8A4,4 0 0,0 8,12C8,13.1 8.45,14.1 9.17,14.83L7.05,16.95C5.78,15.68 5,13.93 5,12A7,7 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></g>
+<g id="btn-sp-down" transform="translate(1052,356)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
+<text id="val-sp-sensor" x="1100" y="362" text-anchor="middle" class="val" font-size="17">21.5°</text>
+<g id="btn-sp-up" transform="translate(1142,356)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6 M0,-6 V6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
+<text x="1027" y="404" class="lbl" font-size="11" data-i18n="active_target">Aktywna (r03)</text><text id="val-sp-active" x="1165" y="404" text-anchor="end" class="val" font-size="12">21.5 °C</text>
+<text x="1027" y="426" class="lbl" font-size="11" data-i18n="fallback_target">Awaryjna (r32)</text><text id="val-sp-fallback" x="1165" y="426" text-anchor="end" class="val" font-size="12">20.0 °C</text>
+<text x="1027" y="448" class="lbl" font-size="11" data-i18n="room_factor">Waga temp. pok.</text><text id="val-room-factor" x="1165" y="448" text-anchor="end" class="val" font-size="12">3</text>
+<rect id="st-room-alarm" x="1045" y="466" width="104" height="20" rx="10" fill="#e6f4ea"/>
+<text id="st-room-alarm-text" x="1097" y="480" text-anchor="middle" class="tag" fill="#137333">czujnik OK</text>
+</g>
+<rect class="box" x="174" y="105" width="104" height="165" rx="8" fill="#ffffff" stroke="#dadce0"/>
+<text x="226" y="97" text-anchor="middle" class="title" data-i18n="heating">CO</text>
+<path id="pipe-co-supply" class="pipe" stroke="#ef9f0c" d="M180,293 V258"/>
+<path id="pipe-co-return" class="pipe" stroke="#d6b511" d="M284,117 H412 V300"/>
+<path id="pipe-floor" fill="none" stroke="url(#grad-floor)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" d="M180,258 H265 a11.75,11.75 0 0 0 0,-23.50 H193 a11.75,11.75 0 0 1 0,-23.50 H265 a11.75,11.75 0 0 0 0,-23.50 H193 a11.75,11.75 0 0 1 0,-23.50 H265 a11.75,11.75 0 0 0 0,-23.50 H193 a11.75,11.75 0 0 1 0,-23.50 H265 H284"/>
+<path id="pipe-cwu-supply" class="pipe" stroke="#c4c7cc" d="M192,305 H330 V290"/>
+<path id="pipe-cwu-return" class="pipe" stroke="#c4c7cc" d="M355,290 V300 H412"/>
+<g id="tank">
+<rect class="box" x="310" y="140" width="90" height="150" rx="32" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>
+<rect id="fill-tank" x="313" y="143" width="84" height="144" rx="29" fill="#f05c1b" opacity="0.18"/>
+<g id="pipe-cwu-coil" fill="none" stroke="#c4c7cc" stroke-width="3.5" stroke-linecap="round"><path d="M375,197.5 A20,6 0 0 0 335,203.0 M375,208.5 A20,6 0 0 0 335,214.0 M375,219.5 A20,6 0 0 0 335,225.0 M375,230.5 A20,6 0 0 0 335,236.0 M375,241.5 A20,6 0 0 0 335,247.0 M375,252.5 A20,6 0 0 0 335,258.0 " stroke-opacity="0.45"/><path d="M330,290 V186 Q330,192 335,192 M335,192 A20,6 0 0 0 375,197.5 M335,203 A20,6 0 0 0 375,208.5 M335,214 A20,6 0 0 0 375,219.5 M335,225 A20,6 0 0 0 375,230.5 M335,236 A20,6 0 0 0 375,241.5 M335,247 A20,6 0 0 0 375,252.5 M335,258 L355,266 V290"/></g>
+<text x="355" y="162" text-anchor="middle" class="title" font-size="12" data-i18n="hot_water">CWU</text>
+<text id="lbl-t3" x="337" y="180" class="lbl">T3</text>
+<text id="val-t3" x="353" y="180" class="val" style="fill:#f05c1b">48 °C</text>
+</g>
+<path id="pipe-return" class="pipe" stroke="#d6b511" d="M412,300 V450 H260 V500"/>
+<path id="pipe-supply" class="pipe" stroke="#ef9f0c" d="M180,500 V317"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(180,470) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(180,272) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(350,117) rotate(0)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(412,380) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(330,450) rotate(180)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(260,482) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="valve" transform="translate(180,305) rotate(-90)"><path d="M-12,-10 L0,0 L-12,10 Z" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><path id="st-valve-co" d="M12,-10 L0,0 L12,10 Z" fill="#ef9f0c" stroke="#5f6368" stroke-width="2"/><path id="st-valve-cwu" d="M-10,12 L0,0 L10,12 Z" fill="#ffffff" stroke="#5f6368" stroke-width="2"/></g>
+<rect id="st-valve-bg" x="198" y="316" width="60" height="20" rx="10" fill="#fce8e6"/>
+<text id="st-valve" x="228" y="330" text-anchor="middle" class="tag" fill="#c5221f">→ CO</text>
+<text x="264" y="330" text-anchor="start" class="lbl" font-size="11" data-i18n="valve">zawór 3D</text>
+<g id="supply-pump" transform="translate(180,380)"><circle r="19" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><g id="st-supply-pump" class="impeller spin" fill="#1a73e8"><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(270)"/><circle r="3" fill="#ffffff" stroke="#5f6368"/></g></g>
+<text x="206" y="376" text-anchor="start" class="lbl" data-i18n="supply_pump">Pompa CO</text>
+<text id="val-supply-pwm" x="206" y="394" text-anchor="start" class="val">40 %</text>
+<g id="heater" transform="translate(180,420) rotate(90) translate(-662,-200)"><rect class="box" x="648" y="187" width="28" height="26" rx="5" fill="#ffffff" stroke="#5f6368" stroke-width="1.8"/><path id="st-heater-coil" d="M651,200 l3,-7 l3.5,14 l3.5,-14 l3.5,14 l3.5,-14 l3,7" fill="none" stroke="#9aa0a6" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text id="val-aux" x="158" y="424" text-anchor="end" class="tag" font-size="12" style="fill:#80868b">0 kW</text>
+<text id="lbl-t1" x="200" y="428" class="lbl">T1</text><text id="val-t1" x="218" y="428" class="val" style="fill:#ef9f0c">38.2 °C</text>
+<text id="lbl-t2" x="300" y="438" class="lbl">T2</text><text id="val-t2" x="318" y="438" class="val" style="fill:#d6b511">33.5 °C</text>
+<text x="34" y="484" class="title" data-i18n="heat_pump">Pompa ciepła</text>
+<path id="ref-suction" class="ref" stroke="#2563eb" d="M290,775 H370 V674"/>
+<path id="ref-discharge" class="ref" stroke="#dc2626" d="M370,626 V525 H290"/>
+<path id="ref-liquid" class="ref" stroke="#d6b511" d="M150,525 H70 V634"/>
+<path id="ref-expanded" class="ref" stroke="#2563eb" d="M70,666 V775 H150"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(330,775) rotate(0)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(370,715) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(370,585) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(330,525) rotate(180)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(110,525) rotate(180)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(70,585) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(70,715) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(110,775) rotate(0)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<g transform="translate(220,775) rotate(-90) translate(-350,-240)">
+<rect id="evaporator" x="325" y="170" width="50" height="140" rx="10" fill="#0f9edb" fill-opacity="0.25" stroke="#5f6368" stroke-width="1.5"/>
+<path id="coil-evaporator" d="M325,200 H358 a13.333333333333334,13.333333333333334 0 0 1 0,26.67 H345 a13.333333333333334,13.333333333333334 0 0 0 0,26.67 H358 a13.333333333333334,13.333333333333334 0 0 1 0,26.67 H325" fill="none" stroke="#0f9edb" stroke-width="4" stroke-linejoin="round"/>
+</g>
+<g transform="translate(220,525) rotate(-90) translate(-590,-240)">
+<rect id="condenser" x="565" y="170" width="50" height="140" rx="10" fill="#ef9f0c" fill-opacity="0.25" stroke="#5f6368" stroke-width="1.5"/>
+<path id="coil-condenser" d="M615,200 H582 a13.333333333333334,13.333333333333334 0 0 0 0,26.67 H595 a13.333333333333334,13.333333333333334 0 0 1 0,26.67 H582 a13.333333333333334,13.333333333333334 0 0 0 0,26.67 H615" fill="none" stroke="#ef9f0c" stroke-width="4" stroke-linejoin="round"/>
+</g>
+<text x="220" y="566" text-anchor="middle" class="lbl" font-size="10" data-i18n="condenser">skraplacz</text>
+<text x="220" y="742" text-anchor="middle" class="lbl" font-size="10" data-i18n="evaporator">parownik</text>
+<g id="compressor" transform="translate(370,650)"><circle id="st-compressor-disc" r="24" fill="#7cb342" stroke="#ffffff" stroke-width="3"/><g id="compressor-fan" class="fan spin" fill="#ffffff"><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(45)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(135)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(225)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(270)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(315)"/><circle r="3.5" fill="#ffffff"/></g></g>
+<g id="expansion-valve" transform="translate(70,650) rotate(90)"><rect x="-16" y="-9" width="32" height="18" rx="4" fill="#e8eaed" stroke="#5f6368" stroke-width="1.5"/><path d="M-9,-9 V9 M9,-9 V9" stroke="#9aa0a6"/></g>
+<text x="44" y="650" transform="rotate(-90,44,650)" text-anchor="middle" class="lbl" font-size="10" data-i18n="expansion_valve">zawór rozprężny</text>
+<rect id="st-compressor-bg" x="162" y="576" width="116" height="20" rx="10" fill="#e6f4ea"/>
+<text id="st-compressor" x="220" y="590" text-anchor="middle" class="tag" fill="#137333">SPRĘŻARKA ON</text>
+<text x="100" y="620" class="lbl" data-i18n="hot_gas">Gorący gaz</text><text id="val-hot-gas" x="336" y="620" text-anchor="end" class="val">72 °C</text>
+<text x="100" y="642" class="lbl" data-i18n="current">Prąd</text><text id="val-current" x="336" y="642" text-anchor="end" class="val">6.2 A</text>
+<rect x="92" y="652" width="250" height="70" rx="8" class="panel" fill="#f8f9fa" stroke="#dadce0"/>
+<text x="104" y="672" class="lbl" data-i18n="integral">Integral</text>
+<text id="val-integral" x="330" y="672" text-anchor="end" class="val">-120 °C·min</text>
+<text x="104" y="694" class="lbl" data-i18n="supply_target">Zasilanie zadana</text>
+<text x="330" y="694" text-anchor="end"><tspan id="val-target" class="val" fill="#f0990e">39.0 °C</tspan></text>
+<text x="330" y="712" text-anchor="end"><tspan id="val-target-now" class="lbl"> (T1 38.2 °C)</tspan></text>
+<rect x="10" y="940" width="400" height="125" rx="6" fill="url(#soil)"/>
+<rect x="10" y="934" width="400" height="8" fill="#34a853"/>
+<text x="300" y="974" class="title" style="fill:#ffffff" data-i18n="ground">Dolne źródło</text>
+<path id="pipe-borehole-up" class="pipe" stroke="#0f9edb" d="M260,1025 Q220,1065 180,1025 V940"/>
+<path id="pipe-borehole-down" class="pipe" stroke="#1a81e3" d="M260,940 V1025"/>
+<path id="pipe-brine-in" class="pipe" stroke="#0f9edb" d="M180,940 V800"/>
+<path id="pipe-brine-out" class="pipe" stroke="#1a81e3" d="M260,800 V940"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(180,990) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(260,990) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(180,912) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(260,840) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="brine-pump" transform="translate(180,860)"><circle r="19" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><g id="st-brine-pump" class="impeller spin" fill="#1a73e8"><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(270)"/><circle r="3" fill="#ffffff" stroke="#5f6368"/></g></g>
+<text x="154" y="856" text-anchor="end" class="lbl" data-i18n="brine_pump">Pompa DŹ</text>
+<text id="val-brine-pwm" x="154" y="874" text-anchor="end" class="val">65 %</text>
+<text x="154" y="908" text-anchor="end" class="lbl" data-i18n="brine_in">DŹ wejście</text>
+<text id="val-brine-in" x="154" y="924" text-anchor="end" class="val" style="fill:#0f9edb">2.1 °C</text>
+<text x="280" y="856" class="lbl" data-i18n="brine_out">DŹ wyjście</text>
+<text id="val-brine-out" x="280" y="872" class="val" style="fill:#1a81e3">-1.4 °C</text>
+</svg>

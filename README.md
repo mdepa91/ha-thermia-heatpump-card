@@ -27,6 +27,8 @@ the colours follow the temperatures live.*
   `number.set_value` call.
 - **Click a value, its label or its icon** to open the more-info dialog of its entity.
 - **Aux heaters** are drawn in the supply line before the heating pump, with the total power on (0 / 3 / 6 / 9 kW).
+- **Phones:** on a card narrower than 700 px the card switches to a portrait drawing (heating on top, heat pump in
+  the middle, ground loop at the bottom), so the text stays readable. Force either one with `layout:`.
 - **Polish and English**, chosen automatically from the Home Assistant language, or forced with `language:`.
 - **Follows the HA theme** (light / dark) for backgrounds, frames and text.
 - **Picks the entities for you:** choose the ESPHome device and the card fills in the entities. It uses the card
@@ -71,6 +73,7 @@ Or list the entities yourself:
 type: custom:thermia-heatpump-card
 title: Heat pump            # optional
 language: pl               # optional: pl | en, default = Home Assistant language
+layout: auto               # optional: auto | landscape | portrait, default auto (portrait below 700 px)
 entities:
   outdoor: sensor.thermia_temp_outdoor
   heatstop: number.thermia_setting_heating_stop_temp
@@ -101,9 +104,10 @@ entities:
 
 Every key is optional. A missing or unavailable entity shows `—`.
 
-**Size:** the drawing keeps its proportions (about 1030 × 600), so its height follows the width the dashboard gives
+**Size:** the landscape drawing keeps its proportions (about 1030 × 600), so its height follows the width the dashboard gives
 the card. The card asks for the full width of its section, but in a *Sections* view a section is a narrow column by
-default. Widen the section with `column_span`, or put the card in a *Panel* view:
+default, and a card narrower than 700 px shows the portrait drawing (420 × 1075, at most 520 px wide) instead.
+For the landscape drawing, widen the section with `column_span`, or put the card in a *Panel* view:
 
 ```yaml
 views:
@@ -152,13 +156,13 @@ A pump counts as running if its binary sensor is on. Without one, it counts as r
 ## Development
 
 ```sh
-python3 build.py            # regenerates src/heatpump.svg and writes dist/thermia-heatpump-card.js
+python3 build.py            # regenerates src/heatpump*.svg and writes dist/thermia-heatpump-card.js
 ```
 
-- `src/schematic.py` draws the SVG and is the single source of the picture. Every dynamic element has an `id`, and
-  every label has a `data-i18n` key.
+- `src/schematic.py` draws both pictures (landscape `heatpump.svg`, portrait `heatpump-portrait.svg`) and is their
+  single source. Both use the same `id` for every dynamic element, and every label has a `data-i18n` key.
 - `src/card.js` is the card logic and the PL / EN texts.
-- `test/index.html` renders three scenarios with a fake `hass` object. `test/render.py` screenshots them in Chromium
+- `test/index.html` renders five scenarios (two of them phone-sized) with a fake `hass` object. `test/render.py` screenshots them in Chromium
   and checks the buttons and the more-info dialog:
 
   ```sh
@@ -172,7 +176,8 @@ Karta Lovelace z rysunkiem pompy ciepła Thermia / Danfoss. Pokazuje dolne źró
 zawór trójdrogowy, ogrzewanie podłogowe (CO), zasobnik CWU i czujnik pokojowy. Rury mają kolor zależny od
 temperatury, a sprężarka i pompy obracają się, gdy pracują. Temperaturę zadaną zmienia się przyciskami − / +, a
 kliknięcie wartości otwiera szczegóły encji. Język (PL / EN) dobiera się automatycznie według ustawień Home
-Assistanta albo przez `language:`. Konfiguracja: sekcja *Configuration* wyżej; klucze odpowiadają encjom z
+Assistanta albo przez `language:`. Na telefonie (karta węższa niż 700 px) rysunek układa się pionowo: CO / CWU na
+górze, pompa ciepła w środku, dolne źródło na dole; wymusza się to przez `layout:`. Konfiguracja: sekcja *Configuration* wyżej; klucze odpowiadają encjom z
 esphome-thermia i esphome-thermia-room.
 
 ## License

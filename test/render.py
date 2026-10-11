@@ -11,7 +11,7 @@ with sync_playwright() as p:
     page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
     page.goto("file:///w/test/index.html")
     page.wait_for_timeout(500)
-    for sid in ("pl-heating", "en-dhw-dark", "pl-idle"):
+    for sid in ("pl-heating", "en-dhw-dark", "pl-idle", "pl-phone", "en-phone-dark"):
         page.locator(f"#{sid}").screenshot(path=f"test/out-{sid}.png")
 
     card = page.locator("#pl-heating thermia-heatpump-card")
@@ -28,7 +28,18 @@ with sync_playwright() as p:
     shown = card.evaluate("c => c.shadowRoot.getElementById('val-sp-sensor').textContent")
     page.wait_for_timeout(900)
     card.evaluate("c => c.shadowRoot.getElementById('val-t1').dispatchEvent(new MouseEvent('click'))")
-    print(json.dumps({"texts": texts, "compressor_spins": spin, "idle_compressor_spins": idle_spin,
+    # layout follows the card width: narrow -> portrait; widening the phone card switches to landscape and back
+    layout = lambda sel: page.locator(sel).evaluate("c => c._layout + ' ' + c.shadowRoot.querySelectorAll('#val-t1').length")
+    layouts = {"wide": layout("#pl-heating thermia-heatpump-card"), "phone": layout("#pl-phone thermia-heatpump-card")}
+    page.evaluate("document.getElementById('pl-phone').style.width = '900px'")
+    page.wait_for_timeout(300)
+    layouts["phone_widened"] = layout("#pl-phone thermia-heatpump-card")
+    page.evaluate("document.getElementById('pl-phone').style.width = ''")
+    page.wait_for_timeout(300)
+    layouts["phone_again"] = layout("#pl-phone thermia-heatpump-card")
+    layouts["phone_t1_after_switch"] = page.locator("#pl-phone thermia-heatpump-card").evaluate(
+        "c => c.shadowRoot.getElementById('val-t1').textContent")
+    print(json.dumps({"layouts": layouts, "texts": texts, "compressor_spins": spin, "idle_compressor_spins": idle_spin,
                       "en_labels": en_labels, "setpoint_shown_after_2x_plus": shown,
                       "service_calls": page.evaluate("window.calls"), "more_info": page.evaluate("window.moreInfo"),
                       "errors": errors}, ensure_ascii=False, indent=1))
