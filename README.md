@@ -178,3 +178,5 @@ esphome-thermia i esphome-thermia-room.
 ## License
 
 [MIT](LICENSE)
+
+The *home-thermometer-outline* and *thermostat* icons are from [Material Design Icons](https://pictogrammers.com/library/mdi/) (Apache 2.0).

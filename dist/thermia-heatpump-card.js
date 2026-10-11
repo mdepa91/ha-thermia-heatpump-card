@@ -4,7 +4,7 @@
  * temperature. Source: src/card.js + src/heatpump.svg, built into dist/ by build.py.
  */
 
-const CARD_VERSION = "0.2.2";
+const CARD_VERSION = "0.2.3";
 const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" viewBox="0 0 1030 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
 <defs>
   <style>
@@ -121,11 +121,12 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" v
 <g id="room" transform="translate(-157,50)">
 <rect class="box" x="1015" y="250" width="160" height="250" rx="16" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>
 <rect x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>
-<text id="val-room" x="1097" y="304" text-anchor="middle" font-size="24" font-weight="bold" style="fill:#8ab4f8">21.3°</text>
-<text x="1097" y="340" text-anchor="middle" class="lbl" data-i18n="setpoint">zadana</text>
-<g id="btn-sp-down" transform="translate(1052,364)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
-<text id="val-sp-sensor" x="1097" y="370" text-anchor="middle" class="val" font-size="17">21.5°</text>
-<g id="btn-sp-up" transform="translate(1142,364)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6 M0,-6 V6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
+<g id="ic-room" transform="translate(1048,283) scale(0.92)" fill="#8ab4f8" opacity="0.85"><title data-i18n="room_temp">Temperatura w pokoju</title><path d="M19 8C20.11 8 21 8.9 21 10V16.76C21.61 17.31 22 18.11 22 19C22 20.66 20.66 22 19 22C17.34 22 16 20.66 16 19C16 18.11 16.39 17.31 17 16.76V10C17 8.9 17.9 8 19 8M19 9C18.45 9 18 9.45 18 10V11H20V10C20 9.45 19.55 9 19 9M12 5.69L7 10.19V18H14.1L14 19L14.1 20H5V12H2L12 3L16.4 6.96C15.89 7.4 15.5 7.97 15.25 8.61L12 5.69Z"/></g>
+<text id="val-room" x="1106" y="304" text-anchor="middle" font-size="24" font-weight="bold" style="fill:#8ab4f8">21.3°</text>
+<g id="ic-setpoint" transform="translate(1086.65,366) scale(0.8625)" fill="#1a73e8"><title data-i18n="setpoint_hint">Temperatura zadana</title><path d="M16.95,16.95L14.83,14.83C15.55,14.1 16,13.1 16,12C16,11.26 15.79,10.57 15.43,10L17.6,7.81C18.5,9 19,10.43 19,12C19,13.93 18.22,15.68 16.95,16.95M12,5C13.57,5 15,5.5 16.19,6.4L14,8.56C13.43,8.21 12.74,8 12,8A4,4 0 0,0 8,12C8,13.1 8.45,14.1 9.17,14.83L7.05,16.95C5.78,15.68 5,13.93 5,12A7,7 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></g>
+<g id="btn-sp-down" transform="translate(1052,356)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
+<text id="val-sp-sensor" x="1100" y="362" text-anchor="middle" class="val" font-size="17">21.5°</text>
+<g id="btn-sp-up" transform="translate(1142,356)"><circle r="14" fill="#e8f0fe" stroke="#1a73e8" stroke-width="1.5"/><path d="M-6,0 H6 M0,-6 V6" stroke="#1a73e8" stroke-width="2.5" stroke-linecap="round"/></g>
 <text x="1027" y="404" class="lbl" font-size="11" data-i18n="active_target">Aktywna (r03)</text><text id="val-sp-active" x="1165" y="404" text-anchor="end" class="val" font-size="12">21.5 °C</text>
 <text x="1027" y="426" class="lbl" font-size="11" data-i18n="fallback_target">Awaryjna (r32)</text><text id="val-sp-fallback" x="1165" y="426" text-anchor="end" class="val" font-size="12">20.0 °C</text>
 <text x="1027" y="448" class="lbl" font-size="11" data-i18n="room_factor">Waga temp. pok.</text><text id="val-room-factor" x="1165" y="448" text-anchor="end" class="val" font-size="12">3</text>
@@ -209,7 +210,8 @@ const I18N = {
     brine_out: "DŹ wyjście", heat_pump: "Pompa ciepła", evaporator: "parownik", condenser: "skraplacz",
     expansion_valve: "zawór rozprężny", hot_gas: "Gorący gaz", current: "Prąd", integral: "Integral",
     supply_target: "Zasilanie zadana", aux_heaters: "grzałki", supply_pump: "Pompa CO", valve: "zawór 3D",
-    heating: "CO", hot_water: "CWU", setpoint: "zadana", active_target: "Aktywna (r03)",
+    heating: "CO", hot_water: "CWU", setpoint: "zadana", room_temp: "Temperatura w pokoju",
+    setpoint_hint: "Temperatura zadana", active_target: "Aktywna (r03)",
     fallback_target: "Awaryjna (r32)", room_factor: "Waga temp. pok.", legend: "Kolor = temperatura",
     inactive: "nieaktywna gałąź", compressor_on: "SPRĘŻARKA ON", compressor_off: "SPRĘŻARKA OFF",
     sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika",
@@ -219,7 +221,8 @@ const I18N = {
     brine_out: "Brine out", heat_pump: "Heat pump", evaporator: "evaporator", condenser: "condenser",
     expansion_valve: "expansion valve", hot_gas: "Hot gas", current: "Current", integral: "Integral",
     supply_target: "Supply target", aux_heaters: "aux heaters", supply_pump: "Heating pump", valve: "3-way valve",
-    heating: "Heating", hot_water: "DHW", setpoint: "setpoint", active_target: "Active (r03)",
+    heating: "Heating", hot_water: "DHW", setpoint: "setpoint", room_temp: "Room temperature",
+    setpoint_hint: "Room setpoint", active_target: "Active (r03)",
     fallback_target: "Fallback (r32)", room_factor: "Room factor", legend: "Colour = temperature",
     inactive: "inactive branch", compressor_on: "COMPRESSOR ON", compressor_off: "COMPRESSOR OFF",
     sensor_ok: "sensor OK", sensor_alarm: "sensor ALARM",
@@ -472,8 +475,8 @@ const CLICK_GROUPS = {
   supply_pump: ["i18n:supply_pump", "val-supply-pwm", "supply-pump"],
   hotwater_production: ["i18n:valve", "st-valve-bg", "valve"],
   hotwater: ["lbl-t3", "val-t3"],
-  room_temperature: ["val-room"],
-  setpoint: ["i18n:setpoint", "val-sp-sensor"],
+  room_temperature: ["ic-room", "val-room"],
+  setpoint: ["ic-setpoint", "val-sp-sensor"],
   indoor_target: ["i18n:active_target", "val-sp-active"],
   fallback_setpoint: ["i18n:fallback_target", "val-sp-fallback"],
   room_factor: ["i18n:room_factor", "val-room-factor"],
