@@ -29,8 +29,10 @@ the colours follow the temperatures live.*
 - **Aux heaters** are drawn in the supply line before the heating pump, with the total power on (0 / 3 / 6 / 9 kW).
 - **Polish and English**, chosen automatically from the Home Assistant language, or forced with `language:`.
 - **Follows the HA theme** (light / dark) for backgrounds, frames and text.
-- **Visual editor:** pick the entities from lists grouped like the drawing. The editor also gives the card the
-  *Layout* tab in Sections views (full width, height).
+- **Picks the entities for you:** choose the ESPHome device and the card fills in the entities. It uses the card
+  map published by esphome-thermia / esphome-thermia-room, and falls back to keywords in the entity names (PL / EN).
+- **Visual editor:** entity lists grouped like the drawing and limited to the chosen device. The editor also gives
+  the card the *Layout* tab in Sections views (full width, height).
 
 ## Installation
 
@@ -42,8 +44,28 @@ Resources as `/local/thermia-heatpump-card.js` (type *JavaScript module*).
 
 ## Configuration
 
-Add the card from the dashboard editor ("Thermia heat pump") and choose the entities in the visual editor, or use
-YAML:
+Add the card from the dashboard editor ("Thermia heat pump") and pick the **ESPHome device** – the entities are
+filled in automatically and can be adjusted. In YAML, `device:` alone is enough as well:
+
+```yaml
+type: custom:thermia-heatpump-card
+device: 0123456789abcdef0123456789abcdef   # device id (Settings → Devices → the device; it is in the URL)
+```
+
+### Automatic entity detection
+
+1. **Card map from the firmware.** esphome-thermia and esphome-thermia-room publish a diagnostic select
+   (*Thermia card map*, *Thermia room card map*). Its options list every configured entity as
+   `<config key>=<entity name>`, so the card finds each entity whatever it is named.
+2. **Keywords** for whatever is still missing, for example with older firmware: Polish and English words in the entity
+   names (`DŹ wejście` / `Brine in`, `Zasilanie` / `Supply`, …), plus the entity domain and a few attributes.
+
+Entities given explicitly under `entities:` always win over detected ones. If you rename an entity in Home
+Assistant, the map can no longer find it; the keywords usually still do, otherwise set it by hand.
+
+### Explicit entities
+
+Or list the entities yourself:
 
 ```yaml
 type: custom:thermia-heatpump-card

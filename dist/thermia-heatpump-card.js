@@ -4,7 +4,7 @@
  * temperature. Source: src/card.js + src/heatpump.svg, built into dist/ by build.py.
  */
 
-const CARD_VERSION = "0.1.5";
+const CARD_VERSION = "0.2.0";
 const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1030" height="600" viewBox="0 0 1030 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
 <defs>
   <style>
@@ -244,7 +244,7 @@ const BINARY_KEYS = ["brine_pump", "compressor", "aux_3kw", "aux_6kw", "supply_p
   "alarm_indoor_sensor"];
 const EDITOR_LABELS = {
   pl: {
-    title: "Tytuł", language: "Język", entities: "Encje", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
+    title: "Tytuł", language: "Język", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
     heating_side: "CO / CWU", room: "Czujnik pokojowy", outdoor: "Temperatura zewnętrzna",
     brine_in: "DŹ wejście", brine_out: "DŹ wyjście", brine_pump: "Pompa DŹ (włączona)",
     brine_pump_speed: "Pompa DŹ (moc %)", compressor: "Sprężarka (włączona)", hot_gas: "Gorący gaz",
@@ -257,7 +257,7 @@ const EDITOR_LABELS = {
     alarm_indoor_sensor: "Alarm czujnika pokojowego",
   },
   en: {
-    title: "Title", language: "Language", entities: "Entities", ground: "Ground loop", heat_pump: "Heat pump",
+    title: "Title", language: "Language", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
     heating_side: "Heating / hot water", room: "Room sensor", outdoor: "Outdoor temperature",
     brine_in: "Brine in", brine_out: "Brine out", brine_pump: "Brine pump (on/off)",
     brine_pump_speed: "Brine pump (speed %)", compressor: "Compressor (on/off)", hot_gas: "Hot gas",
@@ -271,16 +271,182 @@ const EDITOR_LABELS = {
   },
 };
 
-function editorLang() {
-  const ha = document.querySelector("home-assistant");
-  const lang = (ha && ha.hass && ha.hass.language) || "en";
+function langOf(hass) {
+  const lang = (hass && hass.language) || "en";
   return lang.startsWith("pl") ? "pl" : "en";
 }
 
-function entitySelector(key) {
-  if (BINARY_KEYS.includes(key)) return { entity: { domain: ["binary_sensor", "switch", "input_boolean"] } };
-  if (key === "setpoint") return { entity: { domain: ["number", "input_number"] } };
-  return { entity: { domain: ["sensor", "number", "input_number"] } };
+// ---------- device auto-detection ----------
+// 1. Card maps published by the firmware: a select whose first option is MAP_MARKER, the rest "<config key>=<name>"
+//    (esphome-thermia `card_map`, esphome-thermia-room `card_map`).
+// 2. For whatever is still missing: keywords (PL / EN) in the entity names, domain and a few attributes.
+const MAP_MARKER = "thermia-card-map:1";
+// firmware config key -> [card key, priority] (higher wins when two firmware keys map to the same card key)
+const FW_TO_CARD = {
+  temp_outdoor: ["outdoor", 1], temp_brine_in: ["brine_in", 1], temp_brine_out: ["brine_out", 1],
+  brine_pump: ["brine_pump", 1], brine_pump_speed: ["brine_pump_speed", 1], compressor: ["compressor", 1],
+  temp_hot_gas: ["hot_gas", 1], current: ["current", 1], aux_3kw: ["aux_3kw", 1], aux_6kw: ["aux_6kw", 1],
+  integral: ["integral", 1], temp_supply: ["supply", 1], temp_return: ["return", 1],
+  temp_supply_target: ["supply_target", 1], supply_pump: ["supply_pump", 1],
+  supply_pump_speed: ["supply_pump_speed", 1], hotwater_production: ["hotwater_production", 1],
+  temp_hotwater: ["hotwater", 1], temp_indoor_target: ["indoor_target", 1],
+  setting_indoor_temp: ["fallback_setpoint", 1], setting_room_factor: ["room_factor", 1],
+  alarm_indoor_sensor: ["alarm_indoor_sensor", 1],
+  temp_indoor: ["room_temperature", 1],          // what the pump reports ...
+  room_temperature: ["room_temperature", 2],     // ... loses to what thermia_room sends
+  setpoint: ["setpoint", 2],
+};
+const SENSORS = ["sensor", "number", "input_number"];
+const BINARIES = ["binary_sensor", "switch", "input_boolean"];
+const PUMP_DZ = /(pomp|pump).*(dz|brine|zrodl|ground)|(dz|brine|ground).*(pomp|pump)/;
+const PUMP_CO = /(pomp|pump).*(obieg|\bco\b|heating|circulation|supply)|(obieg|\bco\b|heating|circulation|supply).*(pomp|pump)/;
+const SPEED = /\bmoc\b|speed|predk|pwm/;
+// Order matters: more specific keys first, so they are not taken by a broader pattern.
+const KEYWORDS = [
+  ["supply_target", SENSORS, /(zasil|supply).*(zadan|target)|(zadan|target).*(zasil|supply)/],
+  ["supply", SENSORS, /zasil|supply|\bt1\b/, /zadan|target|shunt|bocznik/],
+  ["return", SENSORS, /powrot|return|\bt2\b/, /zadan|target/],
+  ["outdoor", SENSORS, /zewn|outdoor|outside/],
+  ["brine_in", SENSORS, /(dz|brine|ground).*(wej|\bin\b|inlet)|(wej|inlet).*(dz|brine)/],
+  ["brine_out", SENSORS, /(dz|brine|ground).*(wyj|\bout\b|outlet)|(wyj|outlet).*(dz|brine)/],
+  ["brine_pump_speed", SENSORS, PUMP_DZ, null, (n) => SPEED.test(n)],
+  ["brine_pump", BINARIES, PUMP_DZ],
+  ["supply_pump_speed", SENSORS, PUMP_CO, null, (n) => SPEED.test(n)],
+  ["supply_pump", BINARIES, PUMP_CO],
+  ["compressor", BINARIES, /sprez|compressor/],
+  ["hot_gas", SENSORS, /gorac|hot gas|tlocz|discharge/],
+  ["current", SENSORS, /\bprad\b|current/, /czas|runtime/],
+  ["aux_3kw", BINARIES, /\b3 ?kw\b/],
+  ["aux_6kw", BINARIES, /\b6 ?kw\b/],
+  ["integral", SENSORS, /integral|calka/],
+  ["hotwater_production", BINARIES, /cwu|hot ?water|dhw|ciepla woda|podgrz/, /alarm/],
+  ["hotwater", SENSORS, /cwu|hot ?water|dhw|ciepla woda/, /prog|start|stop|threshold|czas|runtime/],
+  ["alarm_indoor_sensor", BINARIES, /alarm.*(pok|room|indoor|wewn)/],
+  ["indoor_target", SENSORS, /(wewn|indoor|pok|room).*(zadan|target)|aktywn|active/, /awaryj|fallback/],
+  // the room-sensor setpoint steps by 0.5 °C, the pump's own (r32) by 1 °C
+  ["setpoint", ["number", "input_number"], /zadan|setpoint/, /awaryj|fallback|aktywn|active|zasil|supply/,
+    (n, st) => (Number(st && st.attributes.step) === 0.5 ? 2 : 1)],
+  ["fallback_setpoint", ["number", "input_number"], /awaryj|fallback|bez czujnik|(pok|indoor|room|wewn).*zadan/,
+    /zasil|supply/],
+  ["room_factor", ["number", "input_number", "sensor"], /waga|room factor|wplyw/],
+  ["room_temperature", ["number", "input_number", "sensor"], /emul|(pok|room|wewn|indoor).*temp/,
+    /zadan|setpoint|target|awaryj|fallback|waga|factor/,
+    (n, st, eid) => (eid.startsWith("number.") ? 2 : 1)],
+];
+
+function norm(s) {
+  return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ł/g, "l")
+    .replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function deviceEntityIds(hass, deviceId) {
+  if (!hass || !hass.entities || !deviceId) return [];
+  return Object.values(hass.entities).filter((e) => e.device_id === deviceId).map((e) => e.entity_id);
+}
+
+function detectEntities(hass, deviceId) {
+  const result = {};
+  const ids = deviceEntityIds(hass, deviceId);
+  if (!ids.length) return result;
+  const dev = hass.devices && hass.devices[deviceId];
+  const devName = norm(dev && (dev.name_by_user || dev.name));
+  // Entity name without the device prefix that has_entity_name adds to friendly_name.
+  const names = {};
+  for (const eid of ids) {
+    const reg = hass.entities[eid];
+    const st = hass.states[eid];
+    let n = norm((reg && reg.name) || (st && st.attributes.friendly_name) || eid.split(".")[1]);
+    if (devName && n.startsWith(`${devName} `)) n = n.slice(devName.length + 1);
+    names[eid] = n;
+  }
+  const used = new Set();
+  const prio = {};
+  for (const eid of ids) {
+    const opts = eid.startsWith("select.") && hass.states[eid] && hass.states[eid].attributes.options;
+    if (!Array.isArray(opts) || opts[0] !== MAP_MARKER) continue;
+    used.add(eid);  // the map itself is never a value
+    for (const opt of opts.slice(1)) {
+      const at = opt.indexOf("=");
+      const target = FW_TO_CARD[opt.slice(0, at)];
+      if (at < 0 || !target) continue;
+      const [key, p] = target;
+      const want = norm(opt.slice(at + 1));
+      const match = ids.find((e) => !used.has(e) && (names[e] === want || names[e].endsWith(` ${want}`)));
+      if (!match || (prio[key] || 0) >= p) continue;
+      if (result[key]) used.delete(result[key]);
+      result[key] = match;
+      prio[key] = p;
+      used.add(match);
+    }
+  }
+  for (const [key, domains, re, not, score] of KEYWORDS) {
+    if (result[key]) continue;
+    let best;
+    let bestScore = 0;
+    for (const eid of ids) {
+      if (used.has(eid) || !domains.includes(eid.split(".")[0])) continue;
+      const n = names[eid];
+      if (!re.test(n) || (not && not.test(n))) continue;
+      const sc = score ? score(n, hass.states[eid], eid) : 1;
+      if (sc > bestScore) {
+        best = eid;
+        bestScore = sc;
+      }
+    }
+    if (best) {
+      result[key] = best;
+      used.add(best);
+    }
+  }
+  return result;
+}
+
+// ---------- visual editor ----------
+function entitySelector(key, include) {
+  const domain = BINARY_KEYS.includes(key) ? BINARIES
+    : key === "setpoint" ? ["number", "input_number"] : SENSORS;
+  return { entity: include && include.length ? { domain, include_entities: include } : { domain } };
+}
+
+function editorSchema(lang, deviceEntities) {
+  const L = EDITOR_LABELS[lang];
+  return [
+    {
+      type: "grid",
+      name: "",
+      schema: [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "language",
+          selector: {
+            select: { mode: "dropdown", options: [{ value: "pl", label: "Polski" }, { value: "en", label: "English" }] },
+          },
+        },
+      ],
+    },
+    { name: "device", selector: { device: { filter: { integration: "esphome" } } } },
+    {
+      type: "expandable",
+      name: "entities",
+      title: L.entities,
+      expanded: true,
+      schema: EDITOR_GROUPS.map(([group, keys]) => ({
+        type: "expandable",
+        flatten: true,
+        name: group,
+        title: L[group],
+        schema: keys.map((key) => ({ name: key, selector: entitySelector(key, deviceEntities) })),
+      })),
+    },
+  ];
+}
+
+// <ha-form> is lazy-loaded by HA; opening a built-in card editor that uses it makes sure it is defined.
+async function loadHaForm() {
+  if (customElements.get("ha-form") || !window.loadCardHelpers) return;
+  const helpers = await window.loadCardHelpers();
+  const card = await helpers.createCardElement({ type: "entities", entities: [] });
+  if (card && card.constructor.getConfigElement) await card.constructor.getConfigElement();
 }
 
 // Click targets: each entity gets one invisible rectangle covering its label, value and icon, so the whole area is
@@ -354,45 +520,17 @@ const STYLE = `
 `;
 
 class ThermiaHeatpumpCard extends HTMLElement {
-  static getConfigForm() {
-    return {
-      schema: [
-        {
-          type: "grid",
-          name: "",
-          schema: [
-            { name: "title", selector: { text: {} } },
-            {
-              name: "language",
-              selector: {
-                select: {
-                  mode: "dropdown",
-                  options: [{ value: "pl", label: "Polski" }, { value: "en", label: "English" }],
-                },
-              },
-            },
-          ],
-        },
-        {
-          type: "expandable",
-          name: "entities",
-          title: EDITOR_LABELS[editorLang()].entities,
-          expanded: true,
-          schema: EDITOR_GROUPS.map(([group, keys]) => ({
-            type: "expandable",
-            flatten: true,
-            name: group,
-            title: EDITOR_LABELS[editorLang()][group],
-            schema: keys.map((key) => ({ name: key, selector: entitySelector(key) })),
-          })),
-        },
-      ],
-      computeLabel: (schema) => EDITOR_LABELS[editorLang()][schema.name] || schema.name,
-    };
+  static getConfigElement() {
+    return document.createElement("thermia-heatpump-card-editor");
+  }
+
+  // Exposed for the editor and for tests.
+  static detectEntities(hass, deviceId) {
+    return detectEntities(hass, deviceId);
   }
 
   static getStubConfig() {
-    return { entities: { outdoor: "sensor.outdoor_temperature", supply: "sensor.supply_t1", return: "sensor.return_t2" } };
+    return { entities: {} };
   }
 
   setConfig(config) {
@@ -403,7 +541,10 @@ class ThermiaHeatpumpCard extends HTMLElement {
     const unknown = Object.keys(config.entities).filter((k) => !ENTITY_KEYS.includes(k));
     if (unknown.length) throw new Error(`Unknown entity keys: ${unknown.join(", ")}`);
     if (config.language && !I18N[config.language]) throw new Error("language: must be pl or en");
+    if (config.device !== undefined && typeof config.device !== "string") throw new Error("device: must be a device id");
     this._config = config;
+    this._ents = config.entities;
+    this._detectedFor = undefined;
     if (this._root) this._build();
   }
 
@@ -419,6 +560,14 @@ class ThermiaHeatpumpCard extends HTMLElement {
 
   set hass(hass) {
     this._hass = hass;
+    // `device:` fills in every entity that is not given explicitly. Re-run only when the registry changes.
+    if (this._config.device && hass.entities !== this._detectedFor) {
+      this._detectedFor = hass.entities;
+      const ents = { ...detectEntities(hass, this._config.device), ...this._config.entities };
+      const changed = JSON.stringify(ents) !== JSON.stringify(this._ents);
+      this._ents = ents;
+      if (changed && this._root) this._build();
+    }
     if (!this._root) this._build();
     this._update();
   }
@@ -473,8 +622,8 @@ class ThermiaHeatpumpCard extends HTMLElement {
     const layer = document.createElementNS(NS, "g");
     layer.setAttribute("id", "hit-layer");
     for (const [key, refs] of Object.entries(CLICK_GROUPS)) {
-      const entityKey = this._config.entities[key] ? key : CLICK_FALLBACK[key];
-      if (!entityKey || !this._config.entities[entityKey]) continue;
+      const entityKey = this._ents[key] ? key : CLICK_FALLBACK[key];
+      if (!entityKey || !this._ents[entityKey]) continue;
       let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
       for (const ref of refs) {
         const el = ref.startsWith("i18n:")
@@ -510,7 +659,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
   }
 
   _state(key) {
-    const id = this._config.entities[key];
+    const id = this._ents[key];
     return id && this._hass ? this._hass.states[id] : undefined;
   }
 
@@ -570,7 +719,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
     if (!this._svg || !this._hass) return;
     // HA calls `set hass` on every state change anywhere in the system; redraw only when one of ours changed.
     // State objects are replaced on change, so comparing references is enough.
-    const states = Object.values(this._config.entities).map((id) => this._hass.states[id]);
+    const states = Object.values(this._ents).map((id) => this._hass.states[id]);
     if (this._lastStates && states.length === this._lastStates.length &&
         states.every((st, i) => st === this._lastStates[i])) return;
     this._lastStates = states;
@@ -682,13 +831,63 @@ class ThermiaHeatpumpCard extends HTMLElement {
   }
 
   _moreInfo(key) {
-    const entityId = this._config.entities[key];
+    const entityId = this._ents[key];
     if (!entityId) return;
     this.dispatchEvent(new CustomEvent("hass-more-info", { detail: { entityId }, bubbles: true, composed: true }));
   }
 }
 
+class ThermiaHeatpumpCardEditor extends HTMLElement {
+  // Exposed for tests.
+  static schema(lang, deviceEntities) {
+    return editorSchema(lang, deviceEntities);
+  }
+
+  setConfig(config) {
+    this._config = { ...config, entities: { ...(config.entities || {}) } };
+    this._render();
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+    this._render();
+  }
+
+  async _render() {
+    if (!this._hass || !this._config) return;
+    if (!this._form) {
+      if (this._loading) return;
+      this._loading = true;
+      await loadHaForm();
+      this._form = document.createElement("ha-form");
+      this._form.addEventListener("value-changed", (ev) => this._changed(ev.detail.value));
+      this.appendChild(this._form);
+    }
+    const lang = langOf(this._hass);
+    this._form.hass = this._hass;
+    this._form.computeLabel = (schema) => EDITOR_LABELS[lang][schema.name] || schema.name;
+    this._form.data = this._config;
+    this._form.schema = editorSchema(lang, deviceEntityIds(this._hass, this._config.device));
+  }
+
+  _changed(value) {
+    const prev = this._config;
+    const cfg = { ...value, entities: Object.fromEntries(Object.entries(value.entities || {}).filter(([, v]) => v)) };
+    // A newly picked device: fill the entities from it, keep the user's picks that belong to the same device.
+    if (cfg.device && cfg.device !== prev.device) {
+      const own = new Set(deviceEntityIds(this._hass, cfg.device));
+      const kept = Object.fromEntries(Object.entries(cfg.entities).filter(([, v]) => own.has(v)));
+      cfg.entities = { ...detectEntities(this._hass, cfg.device), ...kept };
+    }
+    for (const k of ["device", "title", "language"]) if (!cfg[k]) delete cfg[k];
+    this._config = cfg;
+    this.dispatchEvent(new CustomEvent("config-changed", { detail: { config: cfg }, bubbles: true, composed: true }));
+    this._render();
+  }
+}
+
 customElements.define("thermia-heatpump-card", ThermiaHeatpumpCard);
+customElements.define("thermia-heatpump-card-editor", ThermiaHeatpumpCardEditor);
 window.customCards = window.customCards || [];
 window.customCards.push({
   type: "thermia-heatpump-card",
