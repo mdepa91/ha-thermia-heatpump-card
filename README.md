@@ -104,7 +104,7 @@ entities:
 
 Every key is optional. A missing or unavailable entity shows `—`.
 
-**Size:** the landscape drawing keeps its proportions (about 1030 × 600), so its height follows the width the dashboard gives
+**Size:** the landscape drawing keeps its proportions (about 990 × 600), so its height follows the width the dashboard gives
 the card. The card asks for the full width of its section, but in a *Sections* view a section is a narrow column by
 default, and a card narrower than 700 px shows the portrait drawing (420 × 1075, at most 520 px wide) instead.
 For the landscape drawing, widen the section with `column_span`, or put the card in a *Panel* view:

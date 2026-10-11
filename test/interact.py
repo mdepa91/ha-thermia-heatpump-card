@@ -24,7 +24,8 @@ with sync_playwright() as p:
         "label 'DŹ wejście'": "c.shadowRoot.querySelector('[data-i18n=\"brine_in\"]')",
         "heater icon": "c.shadowRoot.getElementById('heater')",
         "label T1": "c.shadowRoot.getElementById('lbl-t1')",
-        "label 'Gorący gaz'": "c.shadowRoot.querySelector('[data-i18n=\"hot_gas\"]')",
+        "hot gas value": "c.shadowRoot.getElementById('val-hot-gas')",
+        "pump CO (return)": "c.shadowRoot.getElementById('supply-pump')",
         "label 'Aktywna (r03)'": "c.shadowRoot.querySelector('[data-i18n=\"active_target\"]')",
     }.items():
         page.evaluate("window.moreInfo = []")

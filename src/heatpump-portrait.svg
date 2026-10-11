@@ -98,7 +98,7 @@
 <path d="M212,74 h34" class="pipe" stroke="#c4c7cc"/><text x="254" y="78" class="lbl" font-size="11" data-i18n="inactive">nieaktywna gałąź</text>
 <g id="room" transform="translate(-1007,-155)">
 <rect class="box" x="1015" y="250" width="160" height="250" rx="16" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>
-<rect x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>
+<rect id="lcd" x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>
 <g id="ic-room" transform="translate(1048,283) scale(0.92)" fill="#8ab4f8" opacity="0.85"><title data-i18n="room_temp">Temperatura w pokoju</title><path d="M19 8C20.11 8 21 8.9 21 10V16.76C21.61 17.31 22 18.11 22 19C22 20.66 20.66 22 19 22C17.34 22 16 20.66 16 19C16 18.11 16.39 17.31 17 16.76V10C17 8.9 17.9 8 19 8M19 9C18.45 9 18 9.45 18 10V11H20V10C20 9.45 19.55 9 19 9M12 5.69L7 10.19V18H14.1L14 19L14.1 20H5V12H2L12 3L16.4 6.96C15.89 7.4 15.5 7.97 15.25 8.61L12 5.69Z"/></g>
 <text id="val-room" x="1106" y="304" text-anchor="middle" font-size="24" font-weight="bold" style="fill:#8ab4f8">21.3°</text>
 <g id="ic-setpoint" transform="translate(1086.65,366) scale(0.8625)" fill="#1a73e8"><title data-i18n="setpoint_hint">Temperatura zadana</title><path d="M16.95,16.95L14.83,14.83C15.55,14.1 16,13.1 16,12C16,11.26 15.79,10.57 15.43,10L17.6,7.81C18.5,9 19,10.43 19,12C19,13.93 18.22,15.68 16.95,16.95M12,5C13.57,5 15,5.5 16.19,6.4L14,8.56C13.43,8.21 12.74,8 12,8A4,4 0 0,0 8,12C8,13.1 8.45,14.1 9.17,14.83L7.05,16.95C5.78,15.68 5,13.93 5,12A7,7 0 0,1 12,5M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12C22,6.47 17.5,2 12,2Z"/></g>
@@ -126,25 +126,25 @@
 <text id="lbl-t3" x="337" y="180" class="lbl">T3</text>
 <text id="val-t3" x="353" y="180" class="val" style="fill:#f05c1b">48 °C</text>
 </g>
-<path id="pipe-return" class="pipe" stroke="#d6b511" d="M412,300 V450 H260 V500"/>
+<path id="pipe-return" class="pipe" stroke="#d6b511" d="M412,300 V440 H260 V500"/>
 <path id="pipe-supply" class="pipe" stroke="#ef9f0c" d="M180,500 V317"/>
 <path d="M-5,-5 L5,0 L-5,5" transform="translate(180,470) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-5,-5 L5,0 L-5,5" transform="translate(180,272) rotate(-90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-5,-5 L5,0 L-5,5" transform="translate(350,117) rotate(0)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-5,-5 L5,0 L-5,5" transform="translate(412,380) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M-5,-5 L5,0 L-5,5" transform="translate(330,450) rotate(180)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M-5,-5 L5,0 L-5,5" transform="translate(296,440) rotate(180)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M-5,-5 L5,0 L-5,5" transform="translate(260,482) rotate(90)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
 <g id="valve" transform="translate(180,305) rotate(-90)"><path d="M-12,-10 L0,0 L-12,10 Z" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><path id="st-valve-co" d="M12,-10 L0,0 L12,10 Z" fill="#ef9f0c" stroke="#5f6368" stroke-width="2"/><path id="st-valve-cwu" d="M-10,12 L0,0 L10,12 Z" fill="#ffffff" stroke="#5f6368" stroke-width="2"/></g>
 <rect id="st-valve-bg" x="198" y="316" width="60" height="20" rx="10" fill="#fce8e6"/>
-<text id="st-valve" x="228" y="330" text-anchor="middle" class="tag" fill="#c5221f">→ CO</text>
+<text id="st-valve" x="228" y="330" text-anchor="middle" class="tag" fill="#c5221f">↑ CO</text>
 <text x="264" y="330" text-anchor="start" class="lbl" font-size="11" data-i18n="valve">zawór 3D</text>
-<g id="supply-pump" transform="translate(180,380)"><circle r="19" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><g id="st-supply-pump" class="impeller spin" fill="#1a73e8"><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(270)"/><circle r="3" fill="#ffffff" stroke="#5f6368"/></g></g>
-<text x="206" y="376" text-anchor="start" class="lbl" data-i18n="supply_pump">Pompa CO</text>
-<text id="val-supply-pwm" x="206" y="394" text-anchor="start" class="val">40 %</text>
-<g id="heater" transform="translate(180,420) rotate(90) translate(-662,-200)"><rect class="box" x="648" y="187" width="28" height="26" rx="5" fill="#ffffff" stroke="#5f6368" stroke-width="1.8"/><path id="st-heater-coil" d="M651,200 l3,-7 l3.5,14 l3.5,-14 l3.5,14 l3.5,-14 l3,7" fill="none" stroke="#9aa0a6" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></g>
-<text id="val-aux" x="158" y="424" text-anchor="end" class="tag" font-size="12" style="fill:#80868b">0 kW</text>
-<text id="lbl-t1" x="200" y="428" class="lbl">T1</text><text id="val-t1" x="218" y="428" class="val" style="fill:#ef9f0c">38.2 °C</text>
-<text id="lbl-t2" x="300" y="438" class="lbl">T2</text><text id="val-t2" x="318" y="438" class="val" style="fill:#d6b511">33.5 °C</text>
+<g id="supply-pump" transform="translate(350,440)"><circle r="19" fill="#ffffff" stroke="#5f6368" stroke-width="2"/><g id="st-supply-pump" class="impeller spin" fill="#1a73e8"><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate(270)"/><circle r="3" fill="#ffffff" stroke="#5f6368"/></g></g>
+<text x="350" y="400" text-anchor="middle" class="lbl" data-i18n="supply_pump">Pompa CO</text>
+<text id="val-supply-pwm" x="350" y="416" text-anchor="middle" class="val">40 %</text>
+<g id="heater" transform="translate(180,400) rotate(90) translate(-662,-200)"><rect class="box" x="648" y="187" width="28" height="26" rx="5" fill="#ffffff" stroke="#5f6368" stroke-width="1.8"/><path id="st-heater-coil" d="M651,200 l3,-7 l3.5,14 l3.5,-14 l3.5,14 l3.5,-14 l3,7" fill="none" stroke="#9aa0a6" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text id="val-aux" x="158" y="404" text-anchor="end" class="tag" font-size="12" style="fill:#80868b">0 kW</text>
+<text id="lbl-t1" x="200" y="404" class="lbl">T1</text><text id="val-t1" x="218" y="404" class="val" style="fill:#ef9f0c">38.2 °C</text>
+<text id="lbl-t2" x="322" y="366" class="lbl">T2</text><text id="val-t2" x="340" y="366" class="val" style="fill:#d6b511">33.5 °C</text>
 <text x="34" y="484" class="title" data-i18n="heat_pump">Pompa ciepła</text>
 <path id="ref-suction" class="ref" stroke="#2563eb" d="M290,775 H370 V674"/>
 <path id="ref-discharge" class="ref" stroke="#dc2626" d="M370,626 V525 H290"/>
@@ -171,16 +171,17 @@
 <g id="compressor" transform="translate(370,650)"><circle id="st-compressor-disc" r="24" fill="#7cb342" stroke="#ffffff" stroke-width="3"/><g id="compressor-fan" class="fan spin" fill="#ffffff"><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(0)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(45)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(90)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(135)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(180)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(225)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(270)"/><path d="M0,0 C3,-6 9,-12 4,-18 C0,-12 -3,-6 0,0 Z" transform="rotate(315)"/><circle r="3.5" fill="#ffffff"/></g></g>
 <g id="expansion-valve" transform="translate(70,650) rotate(90)"><rect x="-16" y="-9" width="32" height="18" rx="4" fill="#e8eaed" stroke="#5f6368" stroke-width="1.5"/><path d="M-9,-9 V9 M9,-9 V9" stroke="#9aa0a6"/></g>
 <text x="44" y="650" transform="rotate(-90,44,650)" text-anchor="middle" class="lbl" font-size="10" data-i18n="expansion_valve">zawór rozprężny</text>
-<rect id="st-compressor-bg" x="162" y="576" width="116" height="20" rx="10" fill="#e6f4ea"/>
-<text id="st-compressor" x="220" y="590" text-anchor="middle" class="tag" fill="#137333">SPRĘŻARKA ON</text>
-<text x="100" y="620" class="lbl" data-i18n="hot_gas">Gorący gaz</text><text id="val-hot-gas" x="336" y="620" text-anchor="end" class="val">72 °C</text>
-<text x="100" y="642" class="lbl" data-i18n="current">Prąd</text><text id="val-current" x="336" y="642" text-anchor="end" class="val">6.2 A</text>
-<rect x="92" y="652" width="250" height="70" rx="8" class="panel" fill="#f8f9fa" stroke="#dadce0"/>
-<text x="104" y="672" class="lbl" data-i18n="integral">Integral</text>
-<text id="val-integral" x="330" y="672" text-anchor="end" class="val">-120 °C·min</text>
-<text x="104" y="694" class="lbl" data-i18n="supply_target">Zasilanie zadana</text>
-<text x="330" y="694" text-anchor="end"><tspan id="val-target" class="val" fill="#f0990e">39.0 °C</tspan></text>
-<text x="330" y="712" text-anchor="end"><tspan id="val-target-now" class="lbl"> (T1 38.2 °C)</tspan></text>
+<rect id="st-compressor-bg" x="248" y="596" width="116" height="20" rx="10" fill="#e6f4ea"/>
+<text id="st-compressor" x="306" y="610" text-anchor="middle" class="tag" fill="#137333">SPRĘŻARKA ON</text>
+<text id="val-hot-gas" x="330" y="513" text-anchor="middle" class="val" style="fill:#dc2626">72 °C</text>
+<rect x="84" y="624" width="250" height="100" rx="8" class="panel" fill="#f8f9fa" stroke="#dadce0"/>
+<text x="96" y="644" class="lbl" data-i18n="integral">Integral</text>
+<text id="val-integral" x="322" y="644" text-anchor="end" class="val">-120 °C·min</text>
+<text x="96" y="666" class="lbl" data-i18n="supply_target">Zasilanie zadana</text>
+<text x="322" y="666" text-anchor="end"><tspan id="val-target" class="val" fill="#f0990e">39.0 °C</tspan></text>
+<text x="322" y="684" text-anchor="end"><tspan id="val-target-now" class="lbl"> (T1 38.2 °C)</tspan></text>
+<text x="96" y="706" class="lbl" data-i18n="current">Prąd</text>
+<text id="val-current" x="322" y="706" text-anchor="end" class="val">6.2 A</text>
 <rect x="10" y="940" width="400" height="125" rx="6" fill="url(#soil)"/>
 <rect x="10" y="934" width="400" height="8" fill="#34a853"/>
 <text x="300" y="974" class="title" style="fill:#ffffff" data-i18n="ground">Dolne źródło</text>

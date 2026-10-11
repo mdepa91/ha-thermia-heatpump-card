@@ -67,14 +67,15 @@ def chevron(x, y, ang, color="#ffffff"):
 
 def pump(gid, x, y, on, label, pwm_id, pwm, side=None):
     """Circulation pump: white disc with a 4-vane impeller; the impeller spins while the pump runs.
-    The label and speed go above the pump, or to its "left" / "right" (for a pump on a vertical pipe)."""
+    The label and speed go above the pump, "below" it, or to its "left" / "right" (for a pump on a vertical pipe)."""
     vanes = "".join(f'<path d="M0,0 C6,-2 10,-8 9,-14 C4,-12 1,-6 0,0 Z" transform="rotate({k * 90})"/>' for k in range(4))
     A(f'<g id="{gid}" transform="translate({x},{y})"><circle r="19" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>'
       f'<g id="st-{gid}" class="impeller{" spin" if on else ""}" fill="{"#1a73e8" if on else "#9aa0a6"}">{vanes}'
       '<circle r="3" fill="#ffffff" stroke="#5f6368"/></g></g>')
-    if side is None:
-        A(f'<text x="{x}" y="{y-40}" text-anchor="middle" class="lbl">{label}</text>')
-        A(f'<text id="{pwm_id}" x="{x}" y="{y-24}" text-anchor="middle" class="val">{pwm} %</text>')
+    if side in (None, "below"):
+        ly, vy = (y - 40, y - 24) if side is None else (y + 36, y + 52)
+        A(f'<text x="{x}" y="{ly}" text-anchor="middle" class="lbl">{label}</text>')
+        A(f'<text id="{pwm_id}" x="{x}" y="{vy}" text-anchor="middle" class="val">{pwm} %</text>')
     else:
         lx, anchor = (x - 26, "end") if side == "left" else (x + 26, "start")
         A(f'<text x="{lx}" y="{y-4}" text-anchor="{anchor}" class="lbl">{label}</text>')
@@ -172,16 +173,32 @@ def compressor_chip(cx, y):
       f'{"SPRĘŻARKA ON" if on else "SPRĘŻARKA OFF"}</text>')
 
 
-def rows(x_lbl, x_val, y, step, items):
-    for i, (l, v, vid) in enumerate(items):
-        yy = y + i * step
-        A(f'<text x="{x_lbl}" y="{yy}" class="lbl">{l}</text>'
-          f'<text id="{vid}" x="{x_val}" y="{yy}" text-anchor="end" class="val">{v}</text>')
+def hot_gas_value(x, y):
+    """Hot gas temperature, just over the discharge pipe."""
+    A(f'<text id="val-hot-gas" x="{x}" y="{y}" text-anchor="middle" class="val" fill="{tcol(V["hot_gas"])}">'
+      f'{V["hot_gas"]:.0f} °C</text>')
 
 
-def compressor_values(x_lbl, x_val, y):
-    rows(x_lbl, x_val, y, 22, (("Gorący gaz", f'{V["hot_gas"]:.0f} °C', "val-hot-gas"),
-                               ("Prąd", f'{V["current"]:.1f} A', "val-current")))
+def target_panel(x, y, w, x_lbl, x_val, t1_own_line=False):
+    """Integral, supply target (with the current T1 it is compared with) and compressor current."""
+    step = 24 if not t1_own_line else 22
+    t1_gap = 18 if t1_own_line else 0
+    h = 3 * step + t1_gap + 16
+    A(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="8" fill="#f8f9fa" stroke="#dadce0"/>')
+    y0 = y + 24 if not t1_own_line else y + 20
+    A(f'<text x="{x_lbl}" y="{y0}" class="lbl">Integral</text>')
+    A(f'<text id="val-integral" x="{x_val}" y="{y0}" text-anchor="end" class="val">{V["integral"]} °C·min</text>')
+    yt = y0 + step
+    A(f'<text x="{x_lbl}" y="{yt}" class="lbl">Zasilanie zadana</text>')
+    now = f'<tspan id="val-target-now" class="lbl"> (T1 {V["t1"]:.1f} °C)</tspan>'
+    A(f'<text x="{x_val}" y="{yt}" text-anchor="end"><tspan id="val-target" class="val" fill="{tcol(V["target"])}">'
+      f'{V["target"]:.1f} °C</tspan>{"" if t1_own_line else now}</text>')
+    if t1_own_line:
+        A(f'<text x="{x_val}" y="{yt + t1_gap}" text-anchor="end">{now}</text>')
+    yc = yt + t1_gap + step
+    A(f'<text x="{x_lbl}" y="{yc}" class="lbl">Prąd</text>')
+    A(f'<text id="val-current" x="{x_val}" y="{yc}" text-anchor="end" class="val">{V["current"]:.1f} A</text>')
+    return y + h
 
 
 def heater(transform, kw_x, kw_y, anchor="middle"):
@@ -207,11 +224,11 @@ def three_way_valve(transform):
       f'<path id="st-valve-cwu" d="M-10,12 L0,0 L10,12 Z" fill="{"#ffffff" if co else hot}" stroke="#5f6368" stroke-width="2"/></g>')
 
 
-def valve_chip(x, y, lbl_x, lbl_y, lbl_anchor="middle"):
+def valve_chip(x, y, lbl_x, lbl_y, lbl_anchor="middle", arrow="→"):
     """'→ CO' chip, 60 x 20 with its top-left corner at (x, y), and the 'zawór 3D' label."""
     A(f'<rect id="st-valve-bg" x="{x}" y="{y}" width="60" height="20" rx="10" fill="{"#fce8e6" if co else "#e8f0fe"}"/>')
     A(f'<text id="st-valve" x="{x+30}" y="{y+14}" text-anchor="middle" class="tag" fill="{"#c5221f" if co else "#1a73e8"}">'
-      f'→ {V["valve"]}</text>')
+      f'{arrow} {V["valve"]}</text>')
     A(f'<text x="{lbl_x}" y="{lbl_y}" text-anchor="{lbl_anchor}" class="lbl" font-size="11">zawór 3D</text>')
 
 
@@ -255,7 +272,7 @@ def room(transform):
     """Room sensor panel with the setpoint buttons; drawn at x=1015..1175, y=250..500 before `transform`."""
     A(f'<g id="room" transform="{transform}">')
     A('<rect x="1015" y="250" width="160" height="250" rx="16" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>')
-    A('<rect x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>')
+    A('<rect id="lcd" x="1043" y="268" width="109" height="52" rx="7" fill="#202124"/>')
     # MDI home-thermometer-outline: measured room temperature
     A('<g id="ic-room" transform="translate(1048,283) scale(0.92)" fill="#8ab4f8" opacity="0.85">'
       '<title data-i18n="room_temp">Temperatura w pokoju</title>'
@@ -297,10 +314,11 @@ def legend(x, y, step=4, inactive_below=False):
 
 # ======================================================================================================================
 def landscape():
-    W, H = 1030, 600
+    W, H = 990, 600
+    D = 40                       # the heat pump frame is this much narrower than the original drawing
     header(W, H)
     # heat pump frame first: every pipe is drawn over it and reaches the heat exchangers
-    A('<rect x="300" y="110" width="340" height="370" rx="12" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>')
+    A('<rect x="300" y="110" width="300" height="384" rx="12" fill="#ffffff" stroke="#5f6368" stroke-width="2"/>')
 
     # ---------- outdoor sensor ----------
     outdoor()
@@ -325,33 +343,33 @@ def landscape():
     # ---------- heat pump: closed refrigerant circuit ----------
     A('<text x="314" y="134" class="title">Pompa ciepła</text>')
     # refrigerant loop: evaporator (left) -> compressor (top) -> condenser (right) -> expansion valve (bottom)
-    A(f'<path id="ref-suction" class="ref" stroke="{tcol(V["brine_out"] - 4)}" d="M350,170 V150 H446"/>')
-    A(f'<path id="ref-discharge" class="ref" stroke="{tcol(V["hot_gas"])}" d="M494,150 H590 V170"/>')
-    A(f'<path id="ref-liquid" class="ref" stroke="{tcol(V["t2"])}" d="M590,310 V350 H486"/>')
-    A(f'<path id="ref-expanded" class="ref" stroke="{tcol(V["brine_out"] - 8)}" d="M454,350 H350 V310"/>')
-    for x, y, a in ((400, 150, 0), (545, 150, 0), (590, 330, 90), (530, 350, 180), (400, 350, 180), (350, 330, -90)):
+    cx, xc = 450, 550             # compressor / expansion valve, condenser pipes
+    A(f'<path id="ref-suction" class="ref" stroke="{tcol(V["brine_out"] - 4)}" d="M350,170 V150 H{cx - 24}"/>')
+    A(f'<path id="ref-discharge" class="ref" stroke="{tcol(V["hot_gas"])}" d="M{cx + 24},150 H{xc} V170"/>')
+    A(f'<path id="ref-liquid" class="ref" stroke="{tcol(V["t2"])}" d="M{xc},310 V350 H{cx + 16}"/>')
+    A(f'<path id="ref-expanded" class="ref" stroke="{tcol(V["brine_out"] - 8)}" d="M{cx - 16},350 H350 V310"/>')
+    for x, y, a in ((390, 150, 0), (512, 150, 0), (xc, 330, 90), (502, 350, 180), (390, 350, 180), (350, 330, -90)):
         chevron(x, y, a)
     # evaporator / condenser (heat exchangers) with the brine / heating water passing through
     evaporator()
-    condenser()
     coil_evaporator()
+    A(f'<g transform="translate(-{D},0)">')
+    condenser()
     coil_condenser()
+    A('</g>')
     A('<text x="350" y="374" text-anchor="middle" class="lbl" font-size="10">parownik</text>')
-    A('<text x="590" y="374" text-anchor="middle" class="lbl" font-size="10">skraplacz</text>')
-    compressor(470, 150)
-    expansion_valve("translate(470,350)")
-    A('<text x="470" y="374" text-anchor="middle" class="lbl" font-size="10">zawór rozprężny</text>')
-    # compressor status + parameters in the middle of the loop
-    compressor_chip(470, 186)
-    compressor_values(400, 540, 234)
-    # bottom panel: integral + supply target
-    A('<rect x="318" y="394" width="304" height="70" rx="8" fill="#f8f9fa" stroke="#dadce0"/>')
-    A('<text x="334" y="422" class="lbl">Integral</text>')
-    A(f'<text id="val-integral" x="606" y="422" text-anchor="end" class="val">{V["integral"]} °C·min</text>')
-    A('<text x="334" y="448" class="lbl">Zasilanie zadana</text>')
-    # the target, then the current supply temperature T1 it is compared with
-    A(f'<text x="606" y="448" text-anchor="end"><tspan id="val-target" class="val" fill="{tcol(V["target"])}">'
-      f'{V["target"]:.1f} °C</tspan><tspan id="val-target-now" class="lbl"> (T1 {V["t1"]:.1f} °C)</tspan></text>')
+    A(f'<text x="{xc}" y="374" text-anchor="middle" class="lbl" font-size="10">skraplacz</text>')
+    compressor(cx, 150)
+    expansion_valve(f"translate({cx},350)")
+    A(f'<text x="{cx}" y="374" text-anchor="middle" class="lbl" font-size="10">zawór rozprężny</text>')
+    # compressor status right under the compressor, hot gas over the discharge pipe
+    compressor_chip(cx, 182)
+    hot_gas_value(512, 140)
+    # bottom panel: integral, supply target, current
+    target_panel(316, 392, 268, 330, 570)
+
+    # everything right of the heat pump keeps its coordinates and moves left as a whole
+    A(f'<g transform="translate(-{D},0)">')
 
     # ---------- heating side ----------
     A(f'<path id="pipe-supply" class="pipe" stroke="{hot}" d="M615,200 H750"/>')
@@ -360,13 +378,14 @@ def landscape():
     A(f'<path id="pipe-co-return" class="pipe" stroke="{ret if co else OFF}" d="M872,265 H845 V470"/>')
     A(f'<path id="pipe-cwu-return" class="pipe" stroke="{OFF if co else ret}" d="M763,440 V470"/>')
     A(f'<path id="pipe-return" class="pipe" stroke="{ret}" d="M845,470 H660 V280 H615"/>')
-    for x, y, a in ((805, 200, 0), (845, 400, 90), (720, 470, 180), (660, 360, -90)):
+    for x, y, a in ((805, 200, 0), (845, 400, 90), (800, 470, 180), (660, 360, -90)):
         chevron(x, y, a)
-    pump("supply-pump", 707, 200, True, "Pompa CO", "val-supply-pwm", V["supply_pwm"])
+    # the heating pump sits in the common return, after the CO and CWU returns join
+    pump("supply-pump", 712, 470, True, "Pompa CO", "val-supply-pwm", V["supply_pwm"], side="below")
     # electric aux heaters (3 + 6 kW) sit in the supply line after the condenser: heater icon, total power above
     heater(None, 662, 179)
     temp_label("lbl-t1", "val-t1", 672, 236, "T1", V["t1"])
-    temp_label("lbl-t2", "val-t2", 672, 498, "T2", V["t2"])
+    temp_label("lbl-t2", "val-t2", 760, 498, "T2", V["t2"])
     three_way_valve("translate(763,200)")
     valve_chip(752, 150, 782, 142)
     # underfloor heating coil (CO): narrow, tall meander from the top (supply) to the bottom (return), colour T1 -> T2
@@ -388,6 +407,7 @@ def landscape():
     room("translate(-157,50)")
     A('<path class="sig" d="M1018,420 H1024 V80 H550 V110"/>')
     A('<text x="700" y="74" class="lbl" font-size="10">303/304 – esphome-thermia-room</text>')
+    A('</g>')
 
     legend(300, 556)
     A('</svg>')
@@ -435,18 +455,20 @@ def portrait():
         A(f'<text id="val-t3" x="{cx - 2}" y="{ty + 40}" class="val" fill="{tcol(V["t3"])}">{V["t3"]:.0f} °C</text>')
     tank(tx, ty, th, (back, front), tank_labels)
     # common return: down the right edge, then left to the condenser
-    A(f'<path id="pipe-return" class="pipe" stroke="{ret}" d="M{DOWN},300 V{OY - 10} H{RET} V{OY + 40}"/>')
+    RY = OY - 20                 # common return, left to the condenser
+    A(f'<path id="pipe-return" class="pipe" stroke="{ret}" d="M{DOWN},300 V{RY} H{RET} V{OY + 40}"/>')
     A(f'<path id="pipe-supply" class="pipe" stroke="{hot}" d="M{SUP},{OY + 40} V{VY + 12}"/>')
-    for x, y, a in ((SUP, 470, -90), (SUP, 272, -90), (350, co_top, 0), (DOWN, 380, 90), (330, OY - 10, 180),
+    for x, y, a in ((SUP, 470, -90), (SUP, 272, -90), (350, co_top, 0), (DOWN, 380, 90), (296, RY, 180),
                     (RET, OY + 22, 90)):
         chevron(x, y, a)
     # 3-way valve: inlet from below, heating up, hot water to the right
     three_way_valve(f"translate({SUP},{VY}) rotate(-90)")
-    valve_chip(198, 316, 264, 330, "start")
-    pump("supply-pump", SUP, 380, True, "Pompa CO", "val-supply-pwm", V["supply_pwm"], side="right")
-    heater(f"translate({SUP},420) rotate(90) translate(-662,-200)", SUP - 22, 424, "end")
-    temp_label("lbl-t1", "val-t1", SUP + 20, 428, "T1", V["t1"])
-    temp_label("lbl-t2", "val-t2", 300, 438, "T2", V["t2"])
+    valve_chip(198, 316, 264, 330, "start", arrow="↑")
+    # the heating pump sits in the common return, after the CO and CWU returns join
+    pump("supply-pump", 350, RY, True, "Pompa CO", "val-supply-pwm", V["supply_pwm"])
+    heater(f"translate({SUP},400) rotate(90) translate(-662,-200)", SUP - 22, 404, "end")
+    temp_label("lbl-t1", "val-t1", SUP + 20, 404, "T1", V["t1"])
+    temp_label("lbl-t2", "val-t2", 322, 366, "T2", V["t2"])
 
     # ---------- heat pump: refrigerant circuit turned upright ----------
     # condenser on top (heating water leaves upwards), evaporator at the bottom (brine comes from below),
@@ -475,17 +497,10 @@ def portrait():
     expansion_valve(f"translate({L},{ym}) rotate(90)")
     A(f'<text x="44" y="{ym}" transform="rotate(-90,44,{ym})" text-anchor="middle" class="lbl" font-size="10">'
       'zawór rozprężny</text>')
-    compressor_chip(220, OY + 116)
-    compressor_values(100, 336, OY + 160)
-    A(f'<rect x="92" y="{OY + 192}" width="250" height="70" rx="8" fill="#f8f9fa" stroke="#dadce0"/>')
-    A(f'<text x="104" y="{OY + 212}" class="lbl">Integral</text>')
-    A(f'<text id="val-integral" x="330" y="{OY + 212}" text-anchor="end" class="val">{V["integral"]} °C·min</text>')
-    A(f'<text x="104" y="{OY + 234}" class="lbl">Zasilanie zadana</text>')
-    A(f'<text x="330" y="{OY + 234}" text-anchor="end"><tspan id="val-target" class="val" fill="{tcol(V["target"])}">'
-      f'{V["target"]:.1f} °C</tspan></text>')
-    # the current supply temperature T1 the target is compared with, on its own line
-    A(f'<text x="330" y="{OY + 252}" text-anchor="end"><tspan id="val-target-now" class="lbl">'
-      f' (T1 {V["t1"]:.1f} °C)</tspan></text>')
+    compressor_chip(306, ym - 54)
+    hot_gas_value(330, yc - 12)
+    # the current supply temperature T1 goes on its own line
+    target_panel(84, ym - 26, 250, 96, 322, t1_own_line=True)
 
     # ---------- ground loop (bottom) ----------
     gy = OY + 360                # bottom of the heat pump frame
@@ -512,7 +527,7 @@ def portrait():
 I18N_KEYS = {
     "Zewnętrzna": "outdoor", "Dolne źródło": "ground", "Pompa DŹ": "brine_pump", "DŹ wejście": "brine_in",
     "DŹ wyjście": "brine_out", "Pompa ciepła": "heat_pump", "parownik": "evaporator", "skraplacz": "condenser",
-    "zawór rozprężny": "expansion_valve", "Gorący gaz": "hot_gas", "Prąd": "current", "Integral": "integral",
+    "zawór rozprężny": "expansion_valve", "Prąd": "current", "Integral": "integral",
     "Zasilanie zadana": "supply_target", "Pompa CO": "supply_pump", "zawór 3D": "valve",
     "CO": "heating", "CWU": "hot_water", "zadana": "setpoint", "Aktywna (r03)": "active_target",
     "Awaryjna (r32)": "fallback_target", "Waga temp. pok.": "room_factor", "Kolor = temperatura": "legend",

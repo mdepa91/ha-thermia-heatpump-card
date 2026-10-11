@@ -80,7 +80,7 @@
     wrap.id = sc.id;
     const card = document.createElement("thermia-heatpump-card");
     card.setConfig({ title: sc.id, language: sc.lang, entities });
-    card.hass = { language: "pl", states: states(sc.v), callService: (d, s, data) => window.calls.push({ d, s, data }) };
+    card.hass = { language: "pl", themes: { darkMode: sc.theme === "theme-dark" }, states: states(sc.v), callService: (d, s, data) => window.calls.push({ d, s, data }) };
     card.addEventListener("hass-more-info", (e) => window.moreInfo.push(e.detail.entityId));
     wrap.appendChild(card);
     document.body.appendChild(wrap);

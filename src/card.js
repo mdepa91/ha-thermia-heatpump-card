@@ -285,7 +285,7 @@ const CLICK_GROUPS = {
   brine_out: ["i18n:brine_out", "val-brine-out"],
   brine_pump: ["i18n:brine_pump", "val-brine-pwm", "brine-pump"],
   compressor: ["compressor", "st-compressor-bg"],
-  hot_gas: ["i18n:hot_gas", "val-hot-gas"],
+  hot_gas: ["val-hot-gas"],
   current: ["i18n:current", "val-current"],
   integral: ["i18n:integral", "val-integral"],
   supply_target: ["i18n:supply_target", "val-target", "val-target-now"],
@@ -573,7 +573,8 @@ class ThermiaHeatpumpCard extends HTMLElement {
     if (!this._svg || !this._hass) return;
     // HA calls `set hass` on every state change anywhere in the system; redraw only when one of ours changed.
     // State objects are replaced on change, so comparing references is enough.
-    const states = Object.values(this._ents).map((id) => this._hass.states[id]);
+    const dark = !!(this._hass.themes && this._hass.themes.darkMode);
+    const states = [dark, ...Object.values(this._ents).map((id) => this._hass.states[id])];
     if (this._lastStates && states.length === this._lastStates.length &&
         states.every((st, i) => st === this._lastStates[i])) return;
     this._lastStates = states;
@@ -619,7 +620,7 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._stroke("ref-discharge", comp ? tcol(hotGas) : OFF);
     this._stroke("ref-liquid", comp ? tcol(t2) : OFF);
     this._stroke("ref-expanded", comp ? tcol(bo - 8) : OFF);
-    this._text("val-hot-gas", this._fmt(hotGas, 0, " °C"));
+    this._text("val-hot-gas", this._fmt(hotGas, 0, " °C"), Number.isFinite(hotGas) ? tcol(hotGas) : undefined);
     this._text("val-current", this._fmt(this._num("current"), 1, " A"));
     // aux heaters: total power of the stages that are on
     const kw = (this._on("aux_3kw") ? 3 : 0) + (this._on("aux_6kw") ? 6 : 0);
@@ -654,7 +655,9 @@ class ThermiaHeatpumpCard extends HTMLElement {
     if (gOut) gOut.setAttribute("stop-color", dhw ? OFF : ret);
     this._fill("st-valve-co", dhw ? "#ffffff" : hot);
     this._fill("st-valve-cwu", dhw ? hot : "#ffffff");
-    this._text("st-valve", `→ ${this._t(dhw ? "hot_water" : "heating")}`, dhw ? "#1a73e8" : "#c5221f");
+    // the arrow points where the water goes in the drawing: CO right / CWU down, or CO up / CWU right in portrait
+    const arrow = this._layout === "portrait" ? (dhw ? "→" : "↑") : (dhw ? "↓" : "→");
+    this._text("st-valve", `${arrow} ${this._t(dhw ? "hot_water" : "heating")}`, dhw ? "#1a73e8" : "#c5221f");
     this._fill("st-valve-bg", dhw ? "#e8f0fe" : "#fce8e6");
     this._text("val-supply-pwm", this._fmt(this._num("supply_pump_speed"), 0, " %"));
     this._fill("st-supply-pump", supplyOn ? "#1a73e8" : "#9aa0a6");
@@ -664,7 +667,11 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._fill("fill-tank", tcol(t3));
 
     // room sensor
-    this._text("val-room", this._fmt(this._num("room_temperature"), 1, "°"));
+    // the display contrasts with the theme: dark on a light one, light on a dark one
+    const lcdText = dark ? "#174ea6" : "#8ab4f8";
+    this._fill("lcd", dark ? "#e8eaed" : "#202124");
+    this._fill("ic-room", lcdText);
+    this._text("val-room", this._fmt(this._num("room_temperature"), 1, "°"), lcdText);
     // While a +/- change is waiting to be sent, keep showing it instead of the old state.
     const sp = Number.isFinite(this._pendingSetpoint) ? this._pendingSetpoint : this._num("setpoint");
     this._text("val-sp-sensor", this._fmt(sp, 1, "°"));
