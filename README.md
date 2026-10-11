@@ -36,7 +36,7 @@ the colours follow the temperatures live.*
 
 ## Installation
 
-**HACS:** HACS → ⋮ → Custom repositories → add `https://github.com/mdepa91/thermia-heatpump-card` as type
+**HACS:** HACS → ⋮ → Custom repositories → add `https://github.com/mdepa91/ha-thermia-heatpump-card` as type
 *Dashboard*. Install it, then reload the browser.
 
 **Manually:** copy `dist/thermia-heatpump-card.js` to `config/www/`, then add it under Settings → Dashboards → ⋮ →
