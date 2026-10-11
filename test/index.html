@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>thermia-heatpump-card test</title>
+<style>
+  body { margin: 0; padding: 16px; font-family: Roboto, Helvetica, Arial, sans-serif; background: #e5e5e5; }
+  .theme-light { --card-background-color: #ffffff; --secondary-background-color: #f5f5f5;
+                 --primary-text-color: #212121; --secondary-text-color: #727272; }
+  .theme-dark  { --card-background-color: #1c1c1c; --secondary-background-color: #282828;
+                 --primary-text-color: #e1e1e1; --secondary-text-color: #9b9b9b; }
+  .wrap { width: 900px; margin-bottom: 16px; padding: 8px; }
+  .theme-dark.wrap { background: #111111; }
+</style>
+</head>
+<body>
+<script>
+  // Minimal stand-in for HA's <ha-card>
+  customElements.define("ha-card", class extends HTMLElement {
+    connectedCallback() {
+      this.style.display = "block";
+      this.style.background = "var(--card-background-color)";
+      this.style.borderRadius = "12px";
+      this.style.color = "var(--primary-text-color)";
+    }
+  });
+</script>
+<script src="../dist/thermia-heatpump-card.js"></script>
+<script>
+  const E = (s, attrs = {}) => ({ state: String(s), attributes: attrs });
+  const entities = {
+    outdoor: "sensor.outdoor", brine_in: "sensor.brine_in", brine_out: "sensor.brine_out",
+    brine_pump: "binary_sensor.brine_pump", brine_pump_speed: "sensor.brine_pump_speed",
+    compressor: "binary_sensor.compressor", hot_gas: "sensor.hot_gas", current: "sensor.current",
+    aux_3kw: "binary_sensor.aux_3kw", aux_6kw: "binary_sensor.aux_6kw", integral: "sensor.integral",
+    supply: "sensor.t1", return: "sensor.t2", supply_target: "sensor.supply_target",
+    supply_pump: "binary_sensor.supply_pump", supply_pump_speed: "sensor.supply_pump_speed",
+    hotwater_production: "binary_sensor.hotwater", hotwater: "sensor.t3",
+    room_temperature: "number.room_temp", setpoint: "number.room_setpoint", indoor_target: "sensor.indoor_target",
+    fallback_setpoint: "number.fallback", room_factor: "number.room_factor",
+    alarm_indoor_sensor: "binary_sensor.room_alarm",
+  };
+  function states(v) {
+    return {
+      "sensor.outdoor": E(v.outdoor), "sensor.brine_in": E(v.bi), "sensor.brine_out": E(v.bo),
+      "binary_sensor.brine_pump": E(v.bp ? "on" : "off"), "sensor.brine_pump_speed": E(v.bps),
+      "binary_sensor.compressor": E(v.comp ? "on" : "off"), "sensor.hot_gas": E(v.hg), "sensor.current": E(v.cur),
+      "binary_sensor.aux_3kw": E(v.a3 ? "on" : "off"), "binary_sensor.aux_6kw": E("off"),
+      "sensor.integral": E(v.int), "sensor.t1": E(v.t1), "sensor.t2": E(v.t2), "sensor.supply_target": E(v.tgt),
+      "binary_sensor.supply_pump": E(v.sp ? "on" : "off"), "sensor.supply_pump_speed": E(v.sps),
+      "binary_sensor.hotwater": E(v.dhw ? "on" : "off"), "sensor.t3": E(v.t3),
+      "number.room_temp": E(v.room, { min: 0, max: 31.9, step: 0.1 }),
+      "number.room_setpoint": Object.assign(E(v.set, { min: 16, max: 31.5, step: 0.5 }), { entity_id: "number.room_setpoint" }),
+      "sensor.indoor_target": E(v.set), "number.fallback": E(20), "number.room_factor": E(3),
+      "binary_sensor.room_alarm": E(v.alarm ? "on" : "off"),
+    };
+  }
+  const scenarios = [
+    { id: "pl-heating", theme: "theme-light", lang: "pl",
+      v: { outdoor: -3, bi: 2.1, bo: -1.4, bp: 1, bps: 65, comp: 1, hg: 72, cur: 6.2, a3: 0, int: -120, t1: 38.2,
+           t2: 33.5, tgt: 39, sp: 1, sps: 40, dhw: 0, t3: 48, room: 21.3, set: 21.5, alarm: 0 } },
+    { id: "en-dhw-dark", theme: "theme-dark", lang: "en",
+      v: { outdoor: 4, bi: 5.3, bo: 1.9, bp: 1, bps: 80, comp: 1, hg: 95, cur: 7.9, a3: 1, int: -410, t1: 52.4,
+           t2: 46.1, tgt: 55, sp: 1, sps: 70, dhw: 1, t3: 44, room: 20.6, set: 21, alarm: 1 } },
+    { id: "pl-idle", theme: "theme-light", lang: "pl",
+      v: { outdoor: 12, bi: 8.4, bo: 8.1, bp: 0, bps: 0, comp: 0, hg: 24, cur: 0, a3: 0, int: 0, t1: 24.5,
+           t2: 24.1, tgt: 22, sp: 0, sps: 0, dhw: 0, t3: 47, room: 22.1, set: 21.5, alarm: 0 } },
+  ];
+  window.calls = []; window.moreInfo = [];
+  for (const sc of scenarios) {
+    const wrap = document.createElement("div");
+    wrap.className = `wrap ${sc.theme}`;
+    wrap.id = sc.id;
+    const card = document.createElement("thermia-heatpump-card");
+    card.setConfig({ title: sc.id, language: sc.lang, entities });
+    card.hass = { language: "pl", states: states(sc.v), callService: (d, s, data) => window.calls.push({ d, s, data }) };
+    card.addEventListener("hass-more-info", (e) => window.moreInfo.push(e.detail.entityId));
+    wrap.appendChild(card);
+    document.body.appendChild(wrap);
+  }
+</script>
+</body>
+</html>
