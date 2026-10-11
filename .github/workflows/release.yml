@@ -1,0 +1,32 @@
+# Pushing a tag v<version> publishes a GitHub release, which HACS shows as the card version.
+# The release notes are the tag message (or the tagged commit's message for a plain tag),
+# followed by the generated "Full Changelog" link.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that VERSION and dist match the tag
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          test "$(cat VERSION)" = "$version" || { echo "VERSION is $(cat VERSION), tag is $GITHUB_REF_NAME"; exit 1; }
+          grep -q "$version" dist/thermia-heatpump-card.js || { echo "dist was not rebuilt for $version"; exit 1; }
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch --force origin "refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          git tag -l --format='%(contents)' "$GITHUB_REF_NAME" > notes.md
+          gh release create "$GITHUB_REF_NAME" dist/thermia-heatpump-card.js \
+            --title "$GITHUB_REF_NAME" --notes-file notes.md --generate-notes --verify-tag
