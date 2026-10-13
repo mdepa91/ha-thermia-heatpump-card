@@ -33,6 +33,7 @@ ENTS = [
     ("waga_wplywu_temp_pokojowej_room_factor", "number", "Waga wpływu temp. pokojowej (room_factor)", "setting_room_factor", {"step": 1}),
     ("pok_temp_emulowana", "number", "Pok. temp. emulowana", "room_temperature", {"step": 0.1}),
     ("pok_temp_zadana", "number", "Pok. temp. zadana", "setpoint", {"step": 0.5}),
+    ("nadawanie_czujnika", "switch", "Nadawanie czujnika", "transmit", {}),
 ]
 EXPECTED = {
     "outdoor": "temp_zewnetrzna", "heatstop": "temp_stop_grzania_heatstop", "brine_in": "dz_temp_wejscia", "brine_out": "dz_temp_wyjscia",
@@ -43,9 +44,9 @@ EXPECTED = {
     "hotwater_production": "podgrzewanie_cwu", "hotwater": "ciepla_woda_cwu_t3",
     "room_temperature": "pok_temp_emulowana", "setpoint": "pok_temp_zadana", "indoor_target": "temp_zadana_aktywna",
     "fallback_setpoint": "temp_zadana_awaryjna_bez_czujnika", "room_factor": "waga_wplywu_temp_pokojowej_room_factor",
-    "alarm_indoor_sensor": "alarm_czujnik_pokojowy",
+    "alarm_indoor_sensor": "alarm_czujnik_pokojowy", "transmit": "nadawanie_czujnika",
 }
-ROOM_KEYS = {"room_temperature", "setpoint"}
+ROOM_KEYS = {"room_temperature", "setpoint", "transmit"}
 
 
 def build_hass(with_maps, names_override=None):
@@ -100,7 +101,8 @@ with sync_playwright() as p:
             "alarm_indoor_sensor": "Alarm: room sensor", "setting_hotwater_start_temp": "Hot water start",
             "setting_heating_stop_temp": "Heating stop temperature",
             "setting_indoor_temp": "Fallback setpoint", "setting_room_factor": "Room factor",
-            "room_temperature": "Room temperature (emulated)", "setpoint": "Room setpoint"}))),
+            "room_temperature": "Room temperature (emulated)", "setpoint": "Room setpoint",
+            "transmit": "Room sensor transmission"}))),
     }
     # card with only `device:` renders values from the detected entities
     out["device_only_card"] = page.evaluate("""h => {

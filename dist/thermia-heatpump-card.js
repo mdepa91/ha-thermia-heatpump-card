@@ -4,7 +4,7 @@
  * temperature. Source: src/card.js + src/heatpump.svg, built into dist/ by build.py.
  */
 
-const CARD_VERSION = "0.3.1";
+const CARD_VERSION = "0.3.2";
 const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="990" height="600" viewBox="0 0 990 600" font-family="Helvetica, Arial, sans-serif" font-size="13">
 <defs>
   <style>
@@ -134,10 +134,11 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="990" height="600" vi
 <text x="1027" y="404" class="lbl" font-size="11" data-i18n="active_target">Aktywna (r03)</text><text id="val-sp-active" x="1165" y="404" text-anchor="end" class="val" font-size="12">21.5 °C</text>
 <text x="1027" y="426" class="lbl" font-size="11" data-i18n="fallback_target">Awaryjna (r32)</text><text id="val-sp-fallback" x="1165" y="426" text-anchor="end" class="val" font-size="12">20.0 °C</text>
 <text x="1027" y="448" class="lbl" font-size="11" data-i18n="room_factor">Waga temp. pok.</text><text id="val-room-factor" x="1165" y="448" text-anchor="end" class="val" font-size="12">3</text>
+<g id="ic-transmit" transform="translate(1021,466) scale(0.833)" fill="#1a73e8"><title data-i18n="transmit_hint">Nadawanie do pompy (303/304)</title><rect width="24" height="24" fill="transparent"/><path id="ic-transmit-on" d="M4.93,4.93C3.12,6.74 2,9.24 2,12C2,14.76 3.12,17.26 4.93,19.07L6.34,17.66C4.89,16.22 4,14.22 4,12C4,9.79 4.89,7.78 6.34,6.34L4.93,4.93M19.07,4.93L17.66,6.34C19.11,7.78 20,9.79 20,12C20,14.22 19.11,16.22 17.66,17.66L19.07,19.07C20.88,17.26 22,14.76 22,12C22,9.24 20.88,6.74 19.07,4.93M7.76,7.76C6.67,8.85 6,10.35 6,12C6,13.65 6.67,15.15 7.76,16.24L9.17,14.83C8.45,14.11 8,13.11 8,12C8,10.89 8.45,9.89 9.17,9.17L7.76,7.76M16.24,7.76L14.83,9.17C15.55,9.89 16,10.89 16,12C16,13.11 15.55,14.11 14.83,14.83L16.24,16.24C17.33,15.15 18,13.65 18,12C18,10.35 17.33,8.85 16.24,7.76M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"/><path id="ic-transmit-off" d="M20.84 22.73L12.1 14C12.06 14 12.03 14 12 14C10.9 14 10 13.11 10 12C10 11.97 10 11.94 10 11.9L8.4 10.29C8.15 10.81 8 11.38 8 12C8 13.11 8.45 14.11 9.17 14.83L7.76 16.24C6.67 15.15 6 13.65 6 12C6 10.83 6.34 9.74 6.93 8.82L5.5 7.37C4.55 8.67 4 10.27 4 12C4 14.22 4.89 16.22 6.34 17.66L4.93 19.07C3.12 17.26 2 14.76 2 12C2 9.72 2.77 7.63 4.06 5.95L1.11 3L2.39 1.73L22.11 21.46L20.84 22.73M15.93 12.73L17.53 14.33C17.83 13.61 18 12.83 18 12C18 10.35 17.33 8.85 16.24 7.76L14.83 9.17C15.55 9.89 16 10.89 16 12C16 12.25 15.97 12.5 15.93 12.73M19.03 15.83L20.5 17.28C21.44 15.75 22 13.94 22 12C22 9.24 20.88 6.74 19.07 4.93L17.66 6.34C19.11 7.78 20 9.79 20 12C20 13.39 19.65 14.7 19.03 15.83Z" display="none"/></g>
 <rect id="st-room-alarm" x="1045" y="466" width="104" height="20" rx="10" fill="#e6f4ea"/>
 <text id="st-room-alarm-text" x="1097" y="480" text-anchor="middle" class="tag" fill="#137333">czujnik OK</text>
 </g>
-<path class="sig" d="M1018,420 H1024 V80 H550 V110"/>
+<path id="sig-room" class="sig" d="M1018,420 H1024 V80 H550 V110"/>
 <text x="700" y="74" class="lbl" font-size="10">303/304 – esphome-thermia-room</text>
 </g>
 <text x="300" y="556" class="lbl" font-size="11" data-i18n="legend">Kolor = temperatura</text>
@@ -318,6 +319,7 @@ const SVG_PORTRAIT = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height
 <text x="1027" y="404" class="lbl" font-size="11" data-i18n="active_target">Aktywna (r03)</text><text id="val-sp-active" x="1165" y="404" text-anchor="end" class="val" font-size="12">21.5 °C</text>
 <text x="1027" y="426" class="lbl" font-size="11" data-i18n="fallback_target">Awaryjna (r32)</text><text id="val-sp-fallback" x="1165" y="426" text-anchor="end" class="val" font-size="12">20.0 °C</text>
 <text x="1027" y="448" class="lbl" font-size="11" data-i18n="room_factor">Waga temp. pok.</text><text id="val-room-factor" x="1165" y="448" text-anchor="end" class="val" font-size="12">3</text>
+<g id="ic-transmit" transform="translate(1021,466) scale(0.833)" fill="#1a73e8"><title data-i18n="transmit_hint">Nadawanie do pompy (303/304)</title><rect width="24" height="24" fill="transparent"/><path id="ic-transmit-on" d="M4.93,4.93C3.12,6.74 2,9.24 2,12C2,14.76 3.12,17.26 4.93,19.07L6.34,17.66C4.89,16.22 4,14.22 4,12C4,9.79 4.89,7.78 6.34,6.34L4.93,4.93M19.07,4.93L17.66,6.34C19.11,7.78 20,9.79 20,12C20,14.22 19.11,16.22 17.66,17.66L19.07,19.07C20.88,17.26 22,14.76 22,12C22,9.24 20.88,6.74 19.07,4.93M7.76,7.76C6.67,8.85 6,10.35 6,12C6,13.65 6.67,15.15 7.76,16.24L9.17,14.83C8.45,14.11 8,13.11 8,12C8,10.89 8.45,9.89 9.17,9.17L7.76,7.76M16.24,7.76L14.83,9.17C15.55,9.89 16,10.89 16,12C16,13.11 15.55,14.11 14.83,14.83L16.24,16.24C17.33,15.15 18,13.65 18,12C18,10.35 17.33,8.85 16.24,7.76M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10Z"/><path id="ic-transmit-off" d="M20.84 22.73L12.1 14C12.06 14 12.03 14 12 14C10.9 14 10 13.11 10 12C10 11.97 10 11.94 10 11.9L8.4 10.29C8.15 10.81 8 11.38 8 12C8 13.11 8.45 14.11 9.17 14.83L7.76 16.24C6.67 15.15 6 13.65 6 12C6 10.83 6.34 9.74 6.93 8.82L5.5 7.37C4.55 8.67 4 10.27 4 12C4 14.22 4.89 16.22 6.34 17.66L4.93 19.07C3.12 17.26 2 14.76 2 12C2 9.72 2.77 7.63 4.06 5.95L1.11 3L2.39 1.73L22.11 21.46L20.84 22.73M15.93 12.73L17.53 14.33C17.83 13.61 18 12.83 18 12C18 10.35 17.33 8.85 16.24 7.76L14.83 9.17C15.55 9.89 16 10.89 16 12C16 12.25 15.97 12.5 15.93 12.73M19.03 15.83L20.5 17.28C21.44 15.75 22 13.94 22 12C22 9.24 20.88 6.74 19.07 4.93L17.66 6.34C19.11 7.78 20 9.79 20 12C20 13.39 19.65 14.7 19.03 15.83Z" display="none"/></g>
 <rect id="st-room-alarm" x="1045" y="466" width="104" height="20" rx="10" fill="#e6f4ea"/>
 <text id="st-room-alarm-text" x="1097" y="480" text-anchor="middle" class="tag" fill="#137333">czujnik OK</text>
 </g>
@@ -422,7 +424,7 @@ const I18N = {
     expansion_valve: "zawór rozprężny", hot_gas: "Gorący gaz", current: "Prąd", integral: "Integral",
     supply_target: "Zasilanie zadana", aux_heaters: "grzałki", supply_pump: "Pompa CO", valve: "zawór 3D",
     heating: "CO", hot_water: "CWU", setpoint: "zadana", room_temp: "Temperatura w pokoju",
-    setpoint_hint: "Temperatura zadana", active_target: "Aktywna (r03)",
+    setpoint_hint: "Temperatura zadana", transmit_hint: "Nadawanie do pompy (303/304)", active_target: "Aktywna (r03)",
     fallback_target: "Awaryjna (r32)", room_factor: "Waga temp. pok.", legend: "Kolor = temperatura",
     inactive: "nieaktywna gałąź", compressor_on: "SPRĘŻARKA ON", compressor_off: "SPRĘŻARKA OFF",
     sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika",
@@ -433,7 +435,7 @@ const I18N = {
     expansion_valve: "expansion valve", hot_gas: "Hot gas", current: "Current", integral: "Integral",
     supply_target: "Supply target", aux_heaters: "aux heaters", supply_pump: "Heating pump", valve: "3-way valve",
     heating: "Heating", hot_water: "DHW", setpoint: "setpoint", room_temp: "Room temperature",
-    setpoint_hint: "Room setpoint", active_target: "Active (r03)",
+    setpoint_hint: "Room setpoint", transmit_hint: "Sending to the pump (303/304)", active_target: "Active (r03)",
     fallback_target: "Fallback (r32)", room_factor: "Room factor", legend: "Colour = temperature",
     inactive: "inactive branch", compressor_on: "COMPRESSOR ON", compressor_off: "COMPRESSOR OFF",
     sensor_ok: "sensor OK", sensor_alarm: "sensor ALARM",
@@ -445,7 +447,7 @@ const ENTITY_KEYS = [
   "outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed", "compressor", "hot_gas", "current",
   "aux_3kw", "aux_6kw", "integral", "supply", "return", "supply_target", "supply_pump", "supply_pump_speed",
   "hotwater_production", "hotwater", "room_temperature", "setpoint", "indoor_target", "fallback_setpoint",
-  "room_factor", "alarm_indoor_sensor",
+  "room_factor", "alarm_indoor_sensor", "transmit",
 ];
 
 // Visual editor (gives the card the Config / Visibility / Layout tabs in HA). Groups follow the drawing.
@@ -453,10 +455,11 @@ const EDITOR_GROUPS = [
   ["ground", ["outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed"]],
   ["heat_pump", ["compressor", "hot_gas", "current", "aux_3kw", "aux_6kw", "integral", "supply_target"]],
   ["heating_side", ["supply", "return", "supply_pump", "supply_pump_speed", "hotwater_production", "hotwater"]],
-  ["room", ["room_temperature", "setpoint", "indoor_target", "fallback_setpoint", "room_factor", "alarm_indoor_sensor"]],
+  ["room", ["room_temperature", "setpoint", "indoor_target", "fallback_setpoint", "room_factor", "alarm_indoor_sensor",
+    "transmit"]],
 ];
 const BINARY_KEYS = ["brine_pump", "compressor", "aux_3kw", "aux_6kw", "supply_pump", "hotwater_production",
-  "alarm_indoor_sensor"];
+  "alarm_indoor_sensor", "transmit"];
 const EDITOR_LABELS = {
   pl: {
     title: "Tytuł", language: "Język", layout: "Układ rysunku", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
@@ -470,7 +473,7 @@ const EDITOR_LABELS = {
     hotwater_production: "Grzanie CWU (zawór 3D)", hotwater: "CWU T3", room_temperature: "Temperatura pokojowa",
     setpoint: "Temperatura zadana (przyciski −/+)", indoor_target: "Zadana aktywna (r03)",
     fallback_setpoint: "Zadana awaryjna (r32)", room_factor: "Waga temp. pokojowej",
-    alarm_indoor_sensor: "Alarm czujnika pokojowego",
+    alarm_indoor_sensor: "Alarm czujnika pokojowego", transmit: "Nadawanie czujnika pokojowego (wyłącznik)",
   },
   en: {
     title: "Title", language: "Language", layout: "Drawing layout", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
@@ -485,6 +488,7 @@ const EDITOR_LABELS = {
     room_temperature: "Room temperature", setpoint: "Room setpoint (−/+ buttons)",
     indoor_target: "Active target (r03)", fallback_setpoint: "Fallback setpoint (r32)",
     room_factor: "Room factor", alarm_indoor_sensor: "Room sensor alarm",
+    transmit: "Room sensor transmission (switch)",
   },
 };
 
@@ -512,6 +516,7 @@ const FW_TO_CARD = {
   temp_indoor: ["room_temperature", 1],          // what the pump reports ...
   room_temperature: ["room_temperature", 2],     // ... loses to what thermia_room sends
   setpoint: ["setpoint", 2],
+  transmit: ["transmit", 2],
 };
 const SENSORS = ["sensor", "number", "input_number"];
 const BINARIES = ["binary_sensor", "switch", "input_boolean"];
@@ -540,6 +545,7 @@ const KEYWORDS = [
   ["hotwater_production", BINARIES, /cwu|hot ?water|dhw|ciepla woda|podgrz/, /alarm/],
   ["hotwater", SENSORS, /cwu|hot ?water|dhw|ciepla woda/, /prog|start|stop|threshold|czas|runtime/],
   ["alarm_indoor_sensor", BINARIES, /alarm.*(pok|room|indoor|wewn)/],
+  ["transmit", ["switch", "input_boolean"], /nadaw|transmi|wysyl/],
   ["indoor_target", SENSORS, /(wewn|indoor|pok|room).*(zadan|target)|aktywn|active/, /awaryj|fallback/],
   // the room-sensor setpoint steps by 0.5 °C, the pump's own (r32) by 1 °C
   ["setpoint", ["number", "input_number"], /zadan|setpoint/, /awaryj|fallback|aktywn|active|zasil|supply/,
@@ -705,6 +711,7 @@ const CLICK_GROUPS = {
   fallback_setpoint: ["i18n:fallback_target", "val-sp-fallback"],
   room_factor: ["i18n:room_factor", "val-room-factor"],
   alarm_indoor_sensor: ["st-room-alarm"],
+  transmit: ["ic-transmit"],
 };
 // Without a binary sensor, the pumps fall back to their speed entity.
 const CLICK_FALLBACK = { brine_pump: "brine_pump_speed", supply_pump: "supply_pump_speed", aux_3kw: "aux_6kw" };
@@ -1082,6 +1089,19 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._text("val-sp-active", this._fmt(this._num("indoor_target"), 1, " °C"));
     this._text("val-sp-fallback", this._fmt(this._num("fallback_setpoint"), 1, " °C"));
     this._text("val-room-factor", this._fmt(this._num("room_factor"), 0, ""));
+    // transmission to the pump: off = no frames, the display dims and the 303/304 line fades
+    const txEl = this._el("ic-transmit");
+    if (txEl) txEl.style.display = this._ents.transmit ? "" : "none";
+    const txOff = this._on("transmit") === false;
+    this._fill("ic-transmit", txOff ? "#9aa0a6" : "#1a73e8");
+    const txOn = this._el("ic-transmit-on");
+    const txOffIc = this._el("ic-transmit-off");
+    if (txOn) txOn.style.display = txOff ? "none" : "";
+    if (txOffIc) txOffIc.style.display = txOff ? "inline" : "none";
+    for (const id of ["lcd", "ic-room", "val-room", "sig-room"]) {
+      const el = this._el(id);
+      if (el) el.style.opacity = txOff ? "0.35" : "";
+    }
     const alarm = this._on("alarm_indoor_sensor");
     this._fill("st-room-alarm", alarm ? "#fce8e6" : "#e6f4ea");
     this._text("st-room-alarm-text", this._t(alarm ? "sensor_alarm" : "sensor_ok"), alarm ? "#c5221f" : "#137333");

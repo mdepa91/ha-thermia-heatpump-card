@@ -39,7 +39,7 @@
     hotwater_production: "binary_sensor.hotwater", hotwater: "sensor.t3",
     room_temperature: "number.room_temp", setpoint: "number.room_setpoint", indoor_target: "sensor.indoor_target",
     fallback_setpoint: "number.fallback", room_factor: "number.room_factor",
-    alarm_indoor_sensor: "binary_sensor.room_alarm",
+    alarm_indoor_sensor: "binary_sensor.room_alarm", transmit: "switch.room_transmit",
   };
   function states(v) {
     return {
@@ -54,6 +54,7 @@
       "number.room_setpoint": Object.assign(E(v.set, { min: 16, max: 31.5, step: 0.5 }), { entity_id: "number.room_setpoint" }),
       "sensor.indoor_target": E(v.set), "number.fallback": E(20), "number.room_factor": E(3),
       "binary_sensor.room_alarm": E(v.alarm ? "on" : "off"),
+      "switch.room_transmit": E(v.alarm ? "off" : "on"),  // the alarm scenarios have transmission switched off
     };
   }
   const scenarios = [

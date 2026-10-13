@@ -26,6 +26,7 @@ with sync_playwright() as p:
         "label T1": "c.shadowRoot.getElementById('lbl-t1')",
         "hot gas value": "c.shadowRoot.getElementById('val-hot-gas')",
         "pump CO (return)": "c.shadowRoot.getElementById('supply-pump')",
+        "transmit icon": "c.shadowRoot.getElementById('ic-transmit')",
         "label 'Aktywna (r03)'": "c.shadowRoot.querySelector('[data-i18n=\"active_target\"]')",
     }.items():
         page.evaluate("window.moreInfo = []")

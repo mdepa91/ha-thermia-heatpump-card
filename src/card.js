@@ -18,7 +18,7 @@ const I18N = {
     expansion_valve: "zawór rozprężny", hot_gas: "Gorący gaz", current: "Prąd", integral: "Integral",
     supply_target: "Zasilanie zadana", aux_heaters: "grzałki", supply_pump: "Pompa CO", valve: "zawór 3D",
     heating: "CO", hot_water: "CWU", setpoint: "zadana", room_temp: "Temperatura w pokoju",
-    setpoint_hint: "Temperatura zadana", active_target: "Aktywna (r03)",
+    setpoint_hint: "Temperatura zadana", transmit_hint: "Nadawanie do pompy (303/304)", active_target: "Aktywna (r03)",
     fallback_target: "Awaryjna (r32)", room_factor: "Waga temp. pok.", legend: "Kolor = temperatura",
     inactive: "nieaktywna gałąź", compressor_on: "SPRĘŻARKA ON", compressor_off: "SPRĘŻARKA OFF",
     sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika",
@@ -29,7 +29,7 @@ const I18N = {
     expansion_valve: "expansion valve", hot_gas: "Hot gas", current: "Current", integral: "Integral",
     supply_target: "Supply target", aux_heaters: "aux heaters", supply_pump: "Heating pump", valve: "3-way valve",
     heating: "Heating", hot_water: "DHW", setpoint: "setpoint", room_temp: "Room temperature",
-    setpoint_hint: "Room setpoint", active_target: "Active (r03)",
+    setpoint_hint: "Room setpoint", transmit_hint: "Sending to the pump (303/304)", active_target: "Active (r03)",
     fallback_target: "Fallback (r32)", room_factor: "Room factor", legend: "Colour = temperature",
     inactive: "inactive branch", compressor_on: "COMPRESSOR ON", compressor_off: "COMPRESSOR OFF",
     sensor_ok: "sensor OK", sensor_alarm: "sensor ALARM",
@@ -41,7 +41,7 @@ const ENTITY_KEYS = [
   "outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed", "compressor", "hot_gas", "current",
   "aux_3kw", "aux_6kw", "integral", "supply", "return", "supply_target", "supply_pump", "supply_pump_speed",
   "hotwater_production", "hotwater", "room_temperature", "setpoint", "indoor_target", "fallback_setpoint",
-  "room_factor", "alarm_indoor_sensor",
+  "room_factor", "alarm_indoor_sensor", "transmit",
 ];
 
 // Visual editor (gives the card the Config / Visibility / Layout tabs in HA). Groups follow the drawing.
@@ -49,10 +49,11 @@ const EDITOR_GROUPS = [
   ["ground", ["outdoor", "heatstop", "brine_in", "brine_out", "brine_pump", "brine_pump_speed"]],
   ["heat_pump", ["compressor", "hot_gas", "current", "aux_3kw", "aux_6kw", "integral", "supply_target"]],
   ["heating_side", ["supply", "return", "supply_pump", "supply_pump_speed", "hotwater_production", "hotwater"]],
-  ["room", ["room_temperature", "setpoint", "indoor_target", "fallback_setpoint", "room_factor", "alarm_indoor_sensor"]],
+  ["room", ["room_temperature", "setpoint", "indoor_target", "fallback_setpoint", "room_factor", "alarm_indoor_sensor",
+    "transmit"]],
 ];
 const BINARY_KEYS = ["brine_pump", "compressor", "aux_3kw", "aux_6kw", "supply_pump", "hotwater_production",
-  "alarm_indoor_sensor"];
+  "alarm_indoor_sensor", "transmit"];
 const EDITOR_LABELS = {
   pl: {
     title: "Tytuł", language: "Język", layout: "Układ rysunku", entities: "Encje", device: "Urządzenie ESPHome (automatyczny dobór encji)", ground: "Dolne źródło", heat_pump: "Pompa ciepła",
@@ -66,7 +67,7 @@ const EDITOR_LABELS = {
     hotwater_production: "Grzanie CWU (zawór 3D)", hotwater: "CWU T3", room_temperature: "Temperatura pokojowa",
     setpoint: "Temperatura zadana (przyciski −/+)", indoor_target: "Zadana aktywna (r03)",
     fallback_setpoint: "Zadana awaryjna (r32)", room_factor: "Waga temp. pokojowej",
-    alarm_indoor_sensor: "Alarm czujnika pokojowego",
+    alarm_indoor_sensor: "Alarm czujnika pokojowego", transmit: "Nadawanie czujnika pokojowego (wyłącznik)",
   },
   en: {
     title: "Title", language: "Language", layout: "Drawing layout", entities: "Entities", device: "ESPHome device (fills in the entities)", ground: "Ground loop", heat_pump: "Heat pump",
@@ -81,6 +82,7 @@ const EDITOR_LABELS = {
     room_temperature: "Room temperature", setpoint: "Room setpoint (−/+ buttons)",
     indoor_target: "Active target (r03)", fallback_setpoint: "Fallback setpoint (r32)",
     room_factor: "Room factor", alarm_indoor_sensor: "Room sensor alarm",
+    transmit: "Room sensor transmission (switch)",
   },
 };
 
@@ -108,6 +110,7 @@ const FW_TO_CARD = {
   temp_indoor: ["room_temperature", 1],          // what the pump reports ...
   room_temperature: ["room_temperature", 2],     // ... loses to what thermia_room sends
   setpoint: ["setpoint", 2],
+  transmit: ["transmit", 2],
 };
 const SENSORS = ["sensor", "number", "input_number"];
 const BINARIES = ["binary_sensor", "switch", "input_boolean"];
@@ -136,6 +139,7 @@ const KEYWORDS = [
   ["hotwater_production", BINARIES, /cwu|hot ?water|dhw|ciepla woda|podgrz/, /alarm/],
   ["hotwater", SENSORS, /cwu|hot ?water|dhw|ciepla woda/, /prog|start|stop|threshold|czas|runtime/],
   ["alarm_indoor_sensor", BINARIES, /alarm.*(pok|room|indoor|wewn)/],
+  ["transmit", ["switch", "input_boolean"], /nadaw|transmi|wysyl/],
   ["indoor_target", SENSORS, /(wewn|indoor|pok|room).*(zadan|target)|aktywn|active/, /awaryj|fallback/],
   // the room-sensor setpoint steps by 0.5 °C, the pump's own (r32) by 1 °C
   ["setpoint", ["number", "input_number"], /zadan|setpoint/, /awaryj|fallback|aktywn|active|zasil|supply/,
@@ -301,6 +305,7 @@ const CLICK_GROUPS = {
   fallback_setpoint: ["i18n:fallback_target", "val-sp-fallback"],
   room_factor: ["i18n:room_factor", "val-room-factor"],
   alarm_indoor_sensor: ["st-room-alarm"],
+  transmit: ["ic-transmit"],
 };
 // Without a binary sensor, the pumps fall back to their speed entity.
 const CLICK_FALLBACK = { brine_pump: "brine_pump_speed", supply_pump: "supply_pump_speed", aux_3kw: "aux_6kw" };
@@ -678,6 +683,19 @@ class ThermiaHeatpumpCard extends HTMLElement {
     this._text("val-sp-active", this._fmt(this._num("indoor_target"), 1, " °C"));
     this._text("val-sp-fallback", this._fmt(this._num("fallback_setpoint"), 1, " °C"));
     this._text("val-room-factor", this._fmt(this._num("room_factor"), 0, ""));
+    // transmission to the pump: off = no frames, the display dims and the 303/304 line fades
+    const txEl = this._el("ic-transmit");
+    if (txEl) txEl.style.display = this._ents.transmit ? "" : "none";
+    const txOff = this._on("transmit") === false;
+    this._fill("ic-transmit", txOff ? "#9aa0a6" : "#1a73e8");
+    const txOn = this._el("ic-transmit-on");
+    const txOffIc = this._el("ic-transmit-off");
+    if (txOn) txOn.style.display = txOff ? "none" : "";
+    if (txOffIc) txOffIc.style.display = txOff ? "inline" : "none";
+    for (const id of ["lcd", "ic-room", "val-room", "sig-room"]) {
+      const el = this._el(id);
+      if (el) el.style.opacity = txOff ? "0.35" : "";
+    }
     const alarm = this._on("alarm_indoor_sensor");
     this._fill("st-room-alarm", alarm ? "#fce8e6" : "#e6f4ea");
     this._text("st-room-alarm-text", this._t(alarm ? "sensor_alarm" : "sensor_ok"), alarm ? "#c5221f" : "#137333");

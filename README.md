@@ -100,6 +100,7 @@ entities:
   fallback_setpoint: number.thermia_setting_indoor_temp
   room_factor: number.thermia_room_factor
   alarm_indoor_sensor: binary_sensor.thermia_alarm_indoor_sensor
+  transmit: switch.thermia_room_sensor_transmission
 ```
 
 Every key is optional. A missing or unavailable entity shows `—`.
@@ -141,6 +142,7 @@ views:
 | `fallback_setpoint` | `setting_indoor_temp` | Pump's own setpoint (r32) |
 | `room_factor` | `setting_room_factor` | Room factor |
 | `alarm_indoor_sensor` | `alarm_indoor_sensor` | "sensor OK" / "sensor ALARM" |
+| `transmit` | `transmit` (thermia_room) – a `switch` | Transmission icon next to the alarm chip; while it is off the display and the 303/304 line fade. A click opens the switch |
 
 A pump counts as running if its binary sensor is on. Without one, it counts as running when its speed is above 0.
 
@@ -184,4 +186,4 @@ esphome-thermia i esphome-thermia-room.
 
 [MIT](LICENSE)
 
-The *home-thermometer-outline* and *thermostat* icons are from [Material Design Icons](https://pictogrammers.com/library/mdi/) (Apache 2.0).
+The *home-thermometer-outline*, *thermostat*, *access-point* and *access-point-off* icons are from [Material Design Icons](https://pictogrammers.com/library/mdi/) (Apache 2.0).
