@@ -140,9 +140,12 @@ views:
 | `setpoint` | `setpoint` (thermia_room) – a `number` | Setpoint with − / + buttons |
 | `indoor_target` | `temp_indoor_target` | Target the pump uses (r03) |
 | `fallback_setpoint` | `setting_indoor_temp` | Pump's own setpoint (r32) |
-| `room_factor` | `setting_room_factor` | Room factor |
+| `room_factor` | `setting_room_factor` | Room factor. At 0 the pump does not use the room sensor (it regulates to r32): the chip says "sensor ignored" |
 | `alarm_indoor_sensor` | `alarm_indoor_sensor` | "sensor OK" / "sensor ALARM" |
-| `transmit` | `transmit` (thermia_room) – a `switch` | Transmission icon next to the alarm chip; while it is off the display and the 303/304 line fade. A click opens the switch |
+| `transmit` | `transmit` (thermia_room) – a diagnostic `switch` | Transmission icon next to the alarm chip; while it is off the 303/304 line fades. A click opens the switch |
+
+While the pump does not use the room sensor (alarm, room factor 0 or transmission off), the display and the setpoint
+fade and the fallback setpoint (r32), the target in use, is highlighted.
 
 A pump counts as running if its binary sensor is on. Without one, it counts as running when its speed is above 0.
 

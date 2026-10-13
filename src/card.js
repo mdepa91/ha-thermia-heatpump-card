@@ -21,7 +21,7 @@ const I18N = {
     setpoint_hint: "Temperatura zadana", transmit_hint: "Nadawanie do pompy (303/304)", active_target: "Aktywna (r03)",
     fallback_target: "Awaryjna (r32)", room_factor: "Waga temp. pok.", legend: "Kolor = temperatura",
     inactive: "nieaktywna gałąź", compressor_on: "SPRĘŻARKA ON", compressor_off: "SPRĘŻARKA OFF",
-    sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika",
+    sensor_ok: "czujnik OK", sensor_alarm: "ALARM czujnika", sensor_ignored: "czujnik pominięty",
   },
   en: {
     outdoor: "Outdoor", heatstop: "heat stop", ground: "Ground loop", brine_pump: "Brine pump", brine_in: "Brine in",
@@ -32,7 +32,7 @@ const I18N = {
     setpoint_hint: "Room setpoint", transmit_hint: "Sending to the pump (303/304)", active_target: "Active (r03)",
     fallback_target: "Fallback (r32)", room_factor: "Room factor", legend: "Colour = temperature",
     inactive: "inactive branch", compressor_on: "COMPRESSOR ON", compressor_off: "COMPRESSOR OFF",
-    sensor_ok: "sensor OK", sensor_alarm: "sensor ALARM",
+    sensor_ok: "sensor OK", sensor_alarm: "sensor ALARM", sensor_ignored: "sensor ignored",
   },
 };
 
@@ -681,8 +681,10 @@ class ThermiaHeatpumpCard extends HTMLElement {
     const sp = Number.isFinite(this._pendingSetpoint) ? this._pendingSetpoint : this._num("setpoint");
     this._text("val-sp-sensor", this._fmt(sp, 1, "°"));
     this._text("val-sp-active", this._fmt(this._num("indoor_target"), 1, " °C"));
-    this._text("val-sp-fallback", this._fmt(this._num("fallback_setpoint"), 1, " °C"));
-    this._text("val-room-factor", this._fmt(this._num("room_factor"), 0, ""));
+    const factor = this._num("room_factor");
+    this._text("val-room-factor", this._fmt(factor, 0, ""));
+    // room factor 0 switches the room sensor off: the pump regulates to its own setpoint (r32), no alarm
+    const ignored = factor === 0;
     // transmission to the pump: off = no frames, the display dims and the 303/304 line fades
     const txEl = this._el("ic-transmit");
     if (txEl) txEl.style.display = this._ents.transmit ? "" : "none";
@@ -692,13 +694,23 @@ class ThermiaHeatpumpCard extends HTMLElement {
     const txOffIc = this._el("ic-transmit-off");
     if (txOn) txOn.style.display = txOff ? "none" : "";
     if (txOffIc) txOffIc.style.display = txOff ? "inline" : "none";
-    for (const id of ["lcd", "ic-room", "val-room", "sig-room"]) {
-      const el = this._el(id);
-      if (el) el.style.opacity = txOff ? "0.35" : "";
-    }
     const alarm = this._on("alarm_indoor_sensor");
-    this._fill("st-room-alarm", alarm ? "#fce8e6" : "#e6f4ea");
-    this._text("st-room-alarm-text", this._t(alarm ? "sensor_alarm" : "sensor_ok"), alarm ? "#c5221f" : "#137333");
+    // the room sensor values are not used: dim them; the setpoint buttons still work
+    const unused = txOff || ignored || alarm === true;
+    for (const id of ["lcd", "ic-room", "val-room", "ic-setpoint", "val-sp-sensor", "btn-sp-down", "btn-sp-up"]) {
+      const el = this._el(id);
+      if (el) el.style.opacity = unused ? "0.35" : "";
+    }
+    const sig = this._el("sig-room");
+    if (sig) sig.style.opacity = txOff ? "0.35" : "";
+    // the target in use: r32 while the sensor has an alarm or is switched off
+    const fbLabel = this._svg.querySelector('[data-i18n="fallback_target"]');
+    if (fbLabel) fbLabel.style.fontWeight = unused ? "bold" : "";
+    const fb = this._num("fallback_setpoint");
+    this._text("val-sp-fallback", this._fmt(fb, 1, " °C"), unused && Number.isFinite(fb) ? "#1a73e8" : "");
+    this._fill("st-room-alarm", alarm ? "#fce8e6" : ignored ? "#fef7e0" : "#e6f4ea");
+    this._text("st-room-alarm-text", this._t(alarm ? "sensor_alarm" : ignored ? "sensor_ignored" : "sensor_ok"),
+      alarm ? "#c5221f" : ignored ? "#b06000" : "#137333");
   }
 
   _stepSetpoint(dir) {

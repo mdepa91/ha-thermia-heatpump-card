@@ -52,7 +52,7 @@
       "binary_sensor.hotwater": E(v.dhw ? "on" : "off"), "sensor.t3": E(v.t3),
       "number.room_temp": E(v.room, { min: 0, max: 31.9, step: 0.1 }),
       "number.room_setpoint": Object.assign(E(v.set, { min: 16, max: 31.5, step: 0.5 }), { entity_id: "number.room_setpoint" }),
-      "sensor.indoor_target": E(v.set), "number.fallback": E(20), "number.room_factor": E(3),
+      "sensor.indoor_target": E(v.set), "number.fallback": E(20), "number.room_factor": E(v.rf ?? 3),
       "binary_sensor.room_alarm": E(v.alarm ? "on" : "off"),
       "switch.room_transmit": E(v.alarm ? "off" : "on"),  // the alarm scenarios have transmission switched off
     };
@@ -72,7 +72,7 @@
            t2: 46.1, tgt: 55, sp: 1, sps: 70, dhw: 1, t3: 44, room: 20.6, set: 21, alarm: 1 } },
     { id: "pl-idle", theme: "theme-light", lang: "pl",
       v: { outdoor: 12, bi: 8.4, bo: 8.1, bp: 0, bps: 0, comp: 0, hg: 24, cur: 0, a3: 0, int: 0, t1: 24.5,
-           t2: 24.1, tgt: 22, sp: 0, sps: 0, dhw: 0, t3: 47, room: 22.1, set: 21.5, alarm: 0 } },
+           t2: 24.1, tgt: 22, sp: 0, sps: 0, dhw: 0, t3: 47, room: 22.1, set: 21.5, alarm: 0, rf: 0 } },
   ];
   window.calls = []; window.moreInfo = [];
   for (const sc of scenarios) {
